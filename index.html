@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bot Market Plus</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #f4f4f9; padding: 12px; color: #333; }
+        .header { margin-bottom: 12px; }
+        .header h1 { font-size: 20px; color: #0088cc; margin-bottom: 8px; }
+        .search-box { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; outline: none; background: #fff; }
+        .categories { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
+        .cat-btn { background: #e0e0e0; border: none; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+        .cat-btn.active { background: #0088cc; color: white; }
+        .card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; gap: 12px; }
+        .card img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; }
+        .card-content { flex: 1; }
+        .card-title { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+        .card-desc { font-size: 12px; color: #666; margin-bottom: 6px; }
+        .card-price { font-size: 13px; font-weight: 600; color: #28a745; margin-bottom: 8px; }
+        .btn-group { display: flex; gap: 6px; }
+        .btn { flex: 1; padding: 6px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; text-align: center; }
+        .btn-demo { background: #ff9800; color: white; }
+        .btn-buy { background: #0088cc; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Bot Market Plus 🛍</h1>
+        <input type="text" class="search-box" placeholder="🔍 Botlarni qidirish...">
+    </div>
 
+    <div class="categories">
+        <button class="cat-btn active">Barchasi</button>
+        <button class="cat-btn">⚡️ Bepul</button>
+        <button class="cat-btn">🛒 Do'kon & Savdo</button>
+        <button class="cat-btn">🏢 CRM & Ta'lim</button>
+    </div>
+
+    <!-- 1-Bot -->
+    <div class="card">
+        <img src="https://images.unsplash.com/photo-1556742049-0a67d57a3d2f?w=200&q=80" alt="Do'kon Boti">
+        <div class="card-content">
+            <div class="card-title">Internet Do'kon Boti (Web App)</div>
+            <div class="card-desc">⭐ 4.9 | Savatcha, Click/Payme va mahsulotlar katalogi.</div>
+            <div class="card-price">150,000 so'm / oy</div>
+            <div class="btn-group">
+                <button class="btn btn-demo" onclick="sendAction('demo_shop')">🎮 1 kun DEMO</button>
+                <button class="btn btn-buy" onclick="sendAction('rent_shop')">🔄 Ijaraga olish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2-Bot -->
+    <div class="card">
+        <img src="https://images.unsplash.com/photo-1592210454359-9043f067919b?w=200&q=80" alt="Ob-havo Boti">
+        <div class="card-content">
+            <div class="card-title">Ob-havo va Valyuta Boti</div>
+            <div class="card-desc">⭐ 4.7 | Kunlik avtomatik ob-havo va valyuta kurslari.</div>
+            <div class="card-price" style="color: #0088cc;">⚡️ Bepul (Obuna bilan)</div>
+            <div class="btn-group">
+                <button class="btn btn-buy" style="background: #28a745;" onclick="sendAction('use_free')">⚡️ Darhol Ulanish</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        function sendAction(action) {
+            tg.sendData(action);
+        }
+    </script>
+</body>
+</html>
