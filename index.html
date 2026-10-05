@@ -1,1 +1,397 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Market Plus — Tayyor Botlar Do'koni</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #222222;
+            --accent-color: #0088cc;
+            --price-color: #2e7d32;
+            --badge-bg: #e3f2fd;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 12px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin: 0;
+            color: var(--accent-color);
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        @media (min-width: 600px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-body-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .bot-img {
+            width: 54px;
+            height: 54px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            flex-grow: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .badge {
+            background-color: var(--badge-bg);
+            color: var(--accent-color);
+            font-size: 10px;
+            padding: 3px 7px;
+            border-radius: 20px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .card-desc {
+            font-size: 12px;
+            color: #555;
+            margin: 8px 0 0 0;
+            line-height: 1.4;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .price {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--price-color);
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Bot Market Plus 🛒</h1>
+        <p>Biznesingiz va faoliyatingiz uchun tayyor Telegram botlar</p>
+    </div>
+
+    <div class="grid">
+
+        <!-- Bot 1 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/fast-food.png" alt="Fast Food" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">1. Fast Food Order Bot</h3>
+                        <span class="badge">E-commerce</span>
+                    </div>
+                    <p class="card-desc">Buyurtmalarni yozib boradi, yetkazib berish manzilini qabul qiladi, narxni hisoblaydi va to'lovlarni qabul qiladi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$2.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 2 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/shopping-cart.png" alt="Do'kon" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">2. Telegram Doʻkon Bot</h3>
+                        <span class="badge">E-commerce</span>
+                    </div>
+                    <p class="card-desc">Online bozorda qaysi mahsulot ko'p so'ralgani, narxlar va zakazlarni tahlil qiladi hamda nazorat qiladi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$2.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 3 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/accounting.png" alt="Hisobot" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">3. Doʻkonlar uchun hisobot bot</h3>
+                        <span class="badge">Moliya</span>
+                    </div>
+                    <p class="card-desc">Kichik va katta do'konlar uchun foyda va zararni tahlil qilib, aniq hisobot tayyorlab beradi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$2.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 4 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/musical-notes.png" alt="Musiqa" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">4. Musiqani top bot</h3>
+                        <span class="badge">Media</span>
+                    </div>
+                    <p class="card-desc">Qo'shiqchi ismi yoki qo'shiq nomi bo'yicha izlangan musiqani tezda topib beradi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 5 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/books.png" alt="Kutubxona" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">5. Kutubxonachi bot</h3>
+                        <span class="badge">Ta'lim</span>
+                    </div>
+                    <p class="card-desc">Kitob nomi yoki muallifi bo'yicha qidiruv beradi va kitobni PDF formatida yuklab beradi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 6 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/clapperboard.png" alt="Kino" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">6. Kinoni top bot</h3>
+                        <span class="badge">Media</span>
+                    </div>
+                    <p class="card-desc">Kino nomini yozishingiz bilan so'ralgan filmni tezkor ravishda topib beruvchi yordamchi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 7 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/combo-chart.png" alt="Hisob-kitob" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">7. Hisobot tayyorlash bot</h3>
+                        <span class="badge">Utilit</span>
+                    </div>
+                    <p class="card-desc">Har xil turdagi hisobotlarni qisqa vaqt ichida tez va qulay tayyorlash uchun mo'ljallangan.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 8 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/controller.png" alt="O'yin" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">8. Oʻyin bot</h3>
+                        <span class="badge">O'yinlar</span>
+                    </div>
+                    <p class="card-desc">O'yinlarni yuklab olish, qoidalari bilan tanishish va o'ynashni o'rganish uchun qulay bot.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 9 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/test-passed.png" alt="Test" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">9. Test tahlili bot</h3>
+                        <span class="badge">Ta'lim</span>
+                    </div>
+                    <p class="card-desc">Testlarni tahlil qiladi, xatolarini ko'rsatadi va avtomatik savol-javob o'tkazadi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 10 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/briefcase.png" alt="Biznes" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">10. Biznes yordamchi bot</h3>
+                        <span class="badge">Biznes</span>
+                    </div>
+                    <p class="card-desc">Katta bizneslar uchun statistik hisobotlar qiluvchi, yo'nalish ko'rsatuvchi maslahatchi bot.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$2.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 11 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/teacher.png" alt="O'qituvchi" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">11. Oʻqituvchi bot</h3>
+                        <span class="badge">Ta'lim</span>
+                    </div>
+                    <p class="card-desc">O'qituvchilar uchun dars rejalari va barcha mavzularni samarali rejalashtirish yordamchisi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 12 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/student-male.png" alt="O'quvchi" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">12. Oʻquvchiga yordamchi bot</h3>
+                        <span class="badge">Ta'lim</span>
+                    </div>
+                    <p class="card-desc">Maktab o'quvchilari uchun ustozlik qiladi, uy vazifalarini tayyorlashda ko'maklashadi va tekshiradi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+        <!-- Bot 13 -->
+        <div class="card">
+            <div class="card-body-wrapper">
+                <img src="https://img.icons8.com/color/96/translation.png" alt="Tarjimon" class="bot-img">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3 class="card-title">13. Tarjimon bot</h3>
+                        <span class="badge">Lingvistika</span>
+                    </div>
+                    <p class="card-desc">Matn va iboralarni bo'laklarga bo'lib tarjima qiladi hamda ma'nosini batafsil tushuntiradi.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="price">$1.5 / oy</span>
+                <a href="https://t.me/telegram" target="_blank" class="btn">DEMO / Ijara</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+    </script>
+</body>
+          </html>
+              
