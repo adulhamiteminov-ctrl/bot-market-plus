@@ -1,1 +1,352 @@
 
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Market Plus - Xarita va Botlar Bozori</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; padding: 12px; padding-bottom: 75px; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .logo { font-size: 18px; font-weight: bold; color: #0088cc; }
+        .online-badge { font-size: 11px; background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 12px; font-weight: bold; }
+
+        /* MAIN SWITCHER */
+        .main-switcher { display: flex; background: #e0e0e0; padding: 3px; border-radius: 10px; margin-bottom: 12px; }
+        .switch-btn { flex: 1; padding: 9px 4px; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; color: #555; background: none; cursor: pointer; text-align: center; }
+        .switch-btn.active { background: #ffffff; color: #0088cc; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .location-container { margin-bottom: 8px; }
+        .region-select { width: 100%; background: #ffffff; border: 1px solid #0088cc; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #0088cc; outline: none; }
+        .gps-btn { width: 100%; background: #28a745; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: bold; margin-bottom: 10px; cursor: pointer; border-radius: 10px; }
+
+        #map { width: 100%; height: 210px; border-radius: 12px; margin-bottom: 12px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+
+        .search-group { display: flex; gap: 6px; margin-bottom: 12px; }
+        .search-box { flex: 1; padding: 11px 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; background: #fff; }
+        .search-btn { background: #0088cc; color: white; border: none; padding: 0 16px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        /* ADDS BUSINESS BUTTON */
+        .add-business-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #0088cc, #005580);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(0,136,204,0.25);
+        }
+
+        .categories-title { font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #555; }
+        .categories { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .cat-card { background: #fff; padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 600; border: 1px solid #eee; cursor: pointer; }
+        .cat-promo { grid-column: span 2; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+
+        .card { background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .card-title { font-size: 15px; font-weight: bold; }
+        .card-price { font-size: 11px; color: #28a745; font-weight: bold; background: #e8f5e9; padding: 3px 7px; border-radius: 6px; }
+        .card-info { font-size: 12px; color: #666; margin-bottom: 10px; line-height: 1.4; }
+        .card-actions { display: flex; gap: 6px; }
+
+        .btn { flex: 1; padding: 9px 4px; border: none; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; }
+        .btn-demo { background: #e3f2fd; color: #0d47a1; }
+        .btn-rent { background: #28a745; color: white; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; padding: 15px; }
+        .modal-content { background: #fff; width: 100%; max-width: 400px; border-radius: 14px; padding: 18px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .modal-title { font-size: 16px; font-weight: bold; color: #0088cc; }
+        .close-btn { font-size: 20px; font-weight: bold; border: none; background: none; cursor: pointer; color: #888; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #555; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 13px; outline: none; }
+        .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        /* FOOTER & BOTTOM NAV */
+        .footer-links { margin-top: 15px; background: #fff; border-radius: 10px; padding: 10px; border: 1px solid #eee; }
+        .footer-btn { width: 100%; background: none; border: none; text-align: left; padding: 8px 0; font-size: 12px; color: #444; font-weight: 500; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; justify-content: space-between; }
+
+        .nav-tabs { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #ddd; padding: 6px; z-index: 1000; }
+        .tab { flex: 1; text-align: center; padding: 8px; font-size: 11px; font-weight: bold; color: #666; cursor: pointer; }
+        .tab.active { color: #0088cc; background: #e1f5fe; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">Bot Market Plus</div>
+        <div class="online-badge">🟢 Online: 142</div>
+    </div>
+
+    <!-- MAIN SWITCHER -->
+    <div class="main-switcher">
+        <button class="switch-btn active" id="btnPlaces" onclick="switchSection('places')">📱 Joylar & Xizmatlar</button>
+        <button class="switch-btn" id="btnBots" onclick="switchSection('bots')">🤖 Botlar Bozori ($1.5)</button>
+    </div>
+
+    <!-- SECTION 1: JOY VA XIZMATLAR (MIJOZLAR UCHUN) -->
+    <div id="sectionPlaces">
+        <div class="location-container">
+            <select class="region-select" id="regionSelect">
+                <option value="tashkent_city" selected>📍 Toshkent shahri</option>
+                <option value="tashkent_reg">📍 Toshkent viloyati</option>
+                <option value="samarkand">📍 Samarqand viloyati</option>
+                <option value="bukhara">📍 Buxoro viloyati</option>
+                <option value="fergana">📍 Farg'ona viloyati</option>
+                <option value="namangan">📍 Namangan viloyati</option>
+                <option value="andijan">📍 Andijon viloyati</option>
+                <option value="qashqadaryo">📍 Qashqadaryo viloyati</option>
+                <option value="surxondaryo">📍 Surxondaryo viloyati</option>
+                <option value="jizzakh">📍 Jizzax viloyati</option>
+                <option value="sirdaryo">📍 Sirdaryo viloyati</option>
+                <option value="navoiy">📍 Navoiy viloyati</option>
+                <option value="khorezm">📍 Xorazm viloyati</option>
+                <option value="karakalpakstan">📍 Qoraqalpog'iston Respublikasi</option>
+            </select>
+        </div>
+
+        <button class="gps-btn" onclick="getGPSLocation()">🎯 Hozirgi joylashuvim bo'yicha topish</button>
+        <div id="map"></div>
+
+        <div class="search-group">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Kafe, mehmonxona, AYOQSH qidiring...">
+            <button class="search-btn" onclick="searchLocations()">🔍</button>
+        </div>
+
+        <!-- BIZNES EGALARI UCHUN REKLAMA VA BOT QO'SHISH TUGMASI -->
+        <button class="add-business-btn" onclick="openAddBusinessModal()">
+            📢 O'z joyingiz va botingizni reklama qiling / qo'shing
+        </button>
+
+        <div class="categories-title">Kategoriyalar</div>
+        <div class="categories">
+            <div class="cat-card" onclick="filterByCategory('Restoran')">🍽️ Restoran & Kafe</div>
+            <div class="cat-card" onclick="filterByCategory('Mehmonxona')">🏨 Mehmonxonalar</div>
+            <div class="cat-card" onclick="filterByCategory('AYOQSH')">⛽ AYOQSH (Gaz/Benzin)</div>
+            <div class="cat-card" onclick="filterByCategory('Sartaroshxona')">✂️ Sartaroshxonalar</div>
+            <div class="cat-card" onclick="filterByCategory('Avtoservis')">🛠️ Avtoservislar</div>
+            <div class="cat-card" onclick="filterByCategory('Doʻkon')">🛍️ Do'konlar</div>
+            <div class="cat-card cat-promo" onclick="filterByCategory('Aksiya')">🔥 Aksiyalar & Chegirmalar (30%-50%)</div>
+        </div>
+
+        <div id="cardsContainer"></div>
+    </div>
+
+    <!-- SECTION 2: B2B TAYYOR BOTLAR BOZORI (IJARA) -->
+    <div id="sectionBots" style="display: none;">
+        <div class="categories-title">🤖 Biznesingiz uchun Tayyor Botlar (Ijara)</div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🍽️ Restoran & Kafe Boti</div>
+                <div class="card-price">$1.5 / oy</div>
+            </div>
+            <div class="card-info">
+                Elektron menyu, stollarni bron qilish, buyurtma va yetkazib berish boti.
+            </div>
+            <div class="card-actions">
+                <a href="https://t.me/bmp_kafe_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
+                <button class="btn btn-rent" onclick="openRentModal('Restoran Boti', '$1.5')">🛒 Ijaraga olish</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">✂️ Sartaroshxona & Salon Boti</div>
+                <div class="card-price">$1.0 / oy</div>
+            </div>
+            <div class="card-info">
+                Mijozlarni onlayn navbatga yozish, ustalar jadvali va narxlar ko'rsatkichi.
+            </div>
+            <div class="card-actions">
+                <a href="https://t.me/bmp_salon_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
+                <button class="btn btn-rent" onclick="openRentModal('Sartaroshxona Boti', '$1.0')">🛒 Ijaraga olish</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🛍️ Internet-Do'kon Boti</div>
+                <div class="card-price">$1.5 / oy</div>
+            </div>
+            <div class="card-info">
+                Mahsulotlar katalogi, xarid savatchasi va buyurtmalarni avtomatik qabul qilish.
+            </div>
+            <div class="card-actions">
+                <a href="https://t.me/bmp_dokon_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
+                <button class="btn btn-rent" onclick="openRentModal('Internet-Do\'kon Boti', '$1.5')">🛒 Ijaraga olish</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🛠️ Avtoservis & Usta Boti</div>
+                <div class="card-price">$1.0 / oy</div>
+            </div>
+            <div class="card-info">
+                Avto-ta'mirlash va xizmatlarga masofadan yozilish va narxlar kalkulyatori.
+            </div>
+            <div class="card-actions">
+                <a href="https://t.me/bmp_avto_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
+                <button class="btn btn-rent" onclick="openRentModal('Avtoservis Boti', '$1.0')">🛒 Ijaraga olish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: BIZNES VA BOT REKLAMA QILISH SHAKLI -->
+    <div class="modal" id="addBusinessModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Biznes / Bot Qo'shish & Reklama</div>
+                <button class="close-btn" onclick="closeModal('addBusinessModal')">&times;</button>
+            </div>
+            <form onsubmit="submitForm(event, 'Biznes qo\'shish arizangiz qabul qilindi!')">
+                <div class="form-group">
+                    <label>Biznes yoki Do'kon nomi:</label>
+                    <input type="text" class="form-control" required placeholder="Masalan: Oazis Fast Food">
+                </div>
+                <div class="form-group">
+                    <label>Kategoriya:</label>
+                    <select class="form-control">
+                        <option>🍽️ Restoran va Kafe</option>
+                        <option>🏨 Mehmonxona</option>
+                        <option>⛽ AYOQSH (Gaz/Benzin)</option>
+                        <option>✂️ Sartaroshxona / Salon</option>
+                        <option>🛠️ Avtoservis</option>
+                        <option>🛍️ Do'kon va Savdo</option>
+                        <option>🔥 Aksiya va Chegirmalar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Aniq Manzil va Mo'ljal:</label>
+                    <input type="text" class="form-control" required placeholder="Toshkent, Yunusobod 4">
+                </div>
+                <div class="form-group">
+                    <label>Telegram Bot yoki Telefon raqam:</label>
+                    <input type="text" class="form-control" required placeholder="@bot_nomi yoki +998901234567">
+                </div>
+                <button type="submit" class="submit-btn">📩 Arizani Yuborish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: BOTNI IJARAGA OLISH SHAKLI -->
+    <div class="modal" id="rentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalBotTitle">Botni Ijaraga Olish</div>
+                <button class="close-btn" onclick="closeModal('rentModal')">&times;</button>
+            </div>
+            <form onsubmit="submitForm(event, 'Ijara arizangiz qabul qilindi! Tez orada bog\'lanamiz.')">
+                <div class="form-group">
+                    <label>Biznesingiz nomi:</label>
+                    <input type="text" class="form-control" required placeholder="Masalan: Grand Cafe">
+                </div>
+                <div class="form-group">
+                    <label>Telefon raqamingiz:</label>
+                    <input type="text" class="form-control" required placeholder="+998 90 123 45 67">
+                </div>
+                <button type="submit" class="submit-btn">🛒 Ijaraga Olish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER LINKS -->
+    <div class="footer-links">
+        <button class="footer-btn" onclick="alert('Bot Market Plus - barcha xizmatlar va botlar bozori.')">
+            <span>ℹ️ Biz haqimizda</span> <span>›</span>
+        </button>
+        <button class="footer-btn" onclick="alert('Fikr-mulohazangiz uchun rahmat!')">
+            <span>💬 Fikr-mulohaza va Kanalimiz</span> <span>›</span>
+        </button>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="nav-tabs">
+        <div class="tab active" id="tabPlaces" onclick="switchSection('places')">📱 Joylar va Xizmatlar</div>
+        <div class="tab" id="tabBots" onclick="switchSection('bots')">🤖 Botlar Bozori ($1.5)</div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([41.2995, 69.2401], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+        var allPlaces = [
+            { id: 1, name: "Oazis Fast Food", category: "Restoran", lat: 41.3110, lon: 69.2405, distance: "350 m", address: "Yunusobod 4-mavze", time: "09:00 - 23:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_kafe_demo_bot" },
+            { id: 2, name: "Grand Hotel Tashkent", category: "Mehmonxona", lat: 41.3150, lon: 69.2500, distance: "1.1 km", address: "Amir Temur ko'chasi 12", time: "24/7 | ⭐ 4.8", bot_link: "https://t.me/bmp_hotel_demo_bot" },
+            { id: 3, name: "UNG Gaz Shoxobchasi", category: "AYOQSH", lat: 41.2900, lon: 69.2300, distance: "800 m", address: "Kichik halqa yo'li", time: "24/7 | Metan & Benzin", bot_link: "#" },
+            { id: 4, name: "VIP Barbershop (50% AKSIYA)", category: "Aksiya Sartaroshxona", lat: 41.3050, lon: 69.2450, distance: "500 m", address: "Oybek ko'chasi 18", time: "09:00 - 21:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_salon_demo_bot" },
+            { id: 5, name: "Avto-Express Servis", category: "Avtoservis", lat: 41.2950, lon: 69.2350, distance: "600 m", address: "Shota Rustaveli ko'chasi", time: "08:30 - 20:00 | ⭐ 4.8", bot_link: "https://t.me/bmp_avto_demo_bot" }
+        ];
+
+        var markersLayer = L.layerGroup().addTo(map);
+
+        function displayPlaces(places) {
+            markersLayer.clearLayers();
+            var container = document.getElementById('cardsContainer');
+            container.innerHTML = "";
+
+            if (places.length === 0) {
+                container.innerHTML = "<div class='card' style='text-align:center; color:#777;'>Hech narsa topilmadi.</div>";
+                return;
+            }
+
+            places.forEach(function(item) {
+                var marker = L.marker([item.lat, item.lon]).bindPopup("<b>" + item.name + "</b><br>" + item.address);
+                markersLayer.addLayer(marker);
+
+                var cardHtml = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">${item.name}</div>
+                            <div class="card-price">${item.distance}</div>
+                        </div>
+                        <div class="card-info">📍 ${item.address}<br>🕒 ${item.time}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-demo" onclick="map.setView([${item.lat}, ${item.lon}], 16)">📍 Xaritada</button>
+                            <a href="${item.bot_link}" target="_blank" class="btn btn-rent">📖 Botga o'tish</a>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        displayPlaces(allPlaces);
+
+        function searchLocations() {
+            var query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) { displayPlaces(allPlaces); return; }
+            var filtered = allPlaces.filter(function(item) {
+                return item.name.toLowerCase().includes(query) || item.category.toLowerCase().includes(query) || item.address.toLowerCase().includes(query);
+            });
+            displayPlaces(filtered);
+        }
+
+        function filterByCategory(catName) {
+            var filtered = allPlaces.filter(function(item) {
+                return item.category.toLowerCase().includes(catName.toLowerCase());
+            });
+            displayPlaces(filtered);
+        }
+
+        function switchSection(sec) {
+            if (sec === 'places') {
+                document.getElementById('sectionPlaces').style.display = 'block';
+                document.getElementById('sectionBots').style.display = 'none';
+                document.getElementById('btnPlaces').classList.add('active');
+                do
