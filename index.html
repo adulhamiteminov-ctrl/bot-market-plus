@@ -1,1 +1,558 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Market Plus - Xarita va Biznes Qo'shish</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 12px;
+            padding-bottom: 70px;
+        }
+
+        /* Top Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0088cc;
+        }
+
+        .online-badge {
+            font-size: 11px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* Region Selector */
+        .location-container {
+            margin-bottom: 8px;
+        }
+
+        .region-select {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #0088cc;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0088cc;
+            outline: none;
+        }
+
+        /* GPS Button */
+        .gps-btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(40,167,69,0.2);
+        }
+
+        /* Map Container */
+        #map {
+            width: 100%;
+            height: 230px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border: 2px solid #fff;
+        }
+
+        /* Search Box with Lupa Button */
+        .search-group {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 11px 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        .search-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 0 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Add Business Banner Button */
+        .add-business-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #0088cc, #005580);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 8px rgba(0,136,204,0.3);
+        }
+
+        /* Categories Grid */
+        .categories-title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .cat-card {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .cat-promo {
+            grid-column: span 2;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        /* Business Card */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #eaeaea;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .card-distance {
+            font-size: 11px;
+            color: #28a745;
+            font-weight: bold;
+            background: #e8f5e9;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .card-info {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-loc { background: #e3f2fd; color: #0d47a1; }
+        .btn-bot { background: #0088cc; color: white; }
+
+        /* Modal Popup Form for Adding Business */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: #fff;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .modal-title { font-size: 16px; font-weight: bold; color: #0088cc; }
+        .close-btn { font-size: 20px; font-weight: bold; border: none; background: none; cursor: pointer; color: #888; }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #555; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 13px; outline: none; }
+
+        .submit-btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Footer links */
+        .footer-links {
+            margin-top: 15px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+        }
+
+        .footer-btn {
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 8px 0;
+            font-size: 12px;
+            color: #444;
+            font-weight: 500;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Bottom Navigation Tabs */
+        .nav-tabs {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #fff;
+            display: flex;
+            border-top: 1px solid #ddd;
+            padding: 6px;
+            z-index: 1000;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            color: #0088cc;
+            background: #e1f5fe;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Bot Market Plus</div>
+        <div class="online-badge">🟢 Online: 142</div>
+    </div>
+
+    <!-- Region Selector -->
+    <div class="location-container">
+        <select class="region-select" id="regionSelect">
+            <option value="tashkent_city" selected>📍 Toshkent shahri</option>
+            <option value="tashkent_reg">📍 Toshkent viloyati</option>
+            <option value="samarkand">📍 Samarqand viloyati</option>
+            <option value="bukhara">📍 Buxoro viloyati</option>
+            <option value="fergana">📍 Farg'ona viloyati</option>
+            <option value="namangan">📍 Namangan viloyati</option>
+            <option value="andijan">📍 Andijon viloyati</option>
+            <option value="qashqadaryo">📍 Qashqadaryo viloyati</option>
+            <option value="surxondaryo">📍 Surxondaryo viloyati</option>
+            <option value="jizzakh">📍 Jizzax viloyati</option>
+            <option value="sirdaryo">📍 Sirdaryo viloyati</option>
+            <option value="navoiy">📍 Navoiy viloyati</option>
+            <option value="khorezm">📍 Xorazm viloyati</option>
+            <option value="karakalpakstan">📍 Qoraqalpog'iston Respublikasi</option>
+        </select>
+    </div>
+
+    <!-- GPS Button -->
+    <button class="gps-btn" onclick="getGPSLocation()">
+        🎯 Hozirgi joylashuvim bo'yicha xaritadan topish
+    </button>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Search Input with Search (Lupa) Button -->
+    <div class="search-group">
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Kafe, mehmonxona, AYOQSH qidiring...">
+        <button class="search-btn" onclick="searchLocations()">🔍</button>
+    </div>
+
+    <!-- Button to Add Business -->
+    <button class="add-business-btn" onclick="openModal()">
+        <span>📢 O'z biznesingiz yoki botingizni joylashtiring ($1.5/oy)</span>
+    </button>
+
+    <!-- Categories -->
+    <div class="categories-title">Kategoriyalar</div>
+    <div class="categories">
+        <div class="cat-card" onclick="filterByCategory('Restoran')">🍽️ Restoran & Kafe</div>
+        <div class="cat-card" onclick="filterByCategory('Mehmonxona')">🏨 Mehmonxonalar</div>
+        <div class="cat-card" onclick="filterByCategory('AYOQSH')">⛽ AYOQSH (Gaz/Benzin)</div>
+        <div class="cat-card" onclick="filterByCategory('Sartaroshxona')">✂️ Sartaroshxonalar</div>
+        <div class="cat-card" onclick="filterByCategory('Avtoservis')">🛠️ Avtoservislar</div>
+        <div class="cat-card" onclick="filterByCategory('Doʻkon')">🛍️ Do'konlar</div>
+        <div class="cat-card cat-promo" onclick="filterByCategory('Aksiya')">🔥 Aksiyalar & Chegirmalar (30%-50%)</div>
+    </div>
+
+    <!-- Dynamic Business Cards Container -->
+    <div id="cardsContainer"></div>
+
+    <!-- Modal Form for Adding Business -->
+    <div class="modal" id="addBusinessModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Biznes va Bot Qo'shish</div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="businessForm" onsubmit="submitBusiness(event)">
+                <div class="form-group">
+                    <label>Biznes yoki Do'kon nomi:</label>
+                    <input type="text" class="form-control" required placeholder="Masalan: Oazis Cafe">
+                </div>
+                <div class="form-group">
+                    <label>Kategoriya:</label>
+                    <select class="form-control">
+                        <option>🍽️ Restoran va Kafe</option>
+                        <option>🏨 Mehmonxona</option>
+                        <option>⛽ AYOQSH (Gaz/Benzin)</option>
+                        <option>✂️ Sartaroshxona / Salon</option>
+                        <option>🛠️ Avtoservis</option>
+                        <option>🛍️ Do'kon va Kiyim</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Aniq Manzil va Mo'ljal:</label>
+                    <input type="text" class="form-control" required placeholder="Masalan: Toshkent, Yunusobod 4">
+                </div>
+                <div class="form-group">
+                    <label>Telegram Bot havolasi yoki Telefon:</label>
+                    <input type="text" class="form-control" required placeholder="@bot_nomi yoki +998901234567">
+                </div>
+                <div class="form-group">
+                    <label>Xizmat turi:</label>
+                    <select class="form-control">
+                        <option>Botim bor (Platformada ko'rsatish)</option>
+                        <option>Botim yo'q ($1.5 evaziga bot ijaraga olish)</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">📩 Arizani Yuborish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Links -->
+    <div class="footer-links">
+        <button class="footer-btn" onclick="alert('Bot Market Plus - barcha xizmatlar va botlar bozori.')">
+            <span>ℹ️ Biz haqimizda</span> <span>›</span>
+        </button>
+        <button class="footer-btn" onclick="alert('Fikr-mulohaza va takliflar uchun kanalimizga xush kelibsiz!')">
+            <span>💬 Fikr-mulohaza va Kanalimiz</span> <span>›</span>
+        </button>
+    </div>
+
+    <!-- Bottom Tabs -->
+    <div class="nav-tabs">
+        <div class="tab active" onclick="switchTab(this, 'places')">📱 Joylar va Xizmatlar</div>
+        <div class="tab" onclick="openModal()">🚀 Bot Ijarasi / Ariza ($1.5)</div>
+    </div>
+
+    <!-- Leaflet JS Script -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        var map = L.map('map').setView([41.2995, 69.2401], 13);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        var allPlaces = [
+            { id: 1, name: "Oazis Fast Food", category: "Restoran", lat: 41.3110, lon: 69.2405, distance: "350 metr", address: "Yunusobod 4-mavze", time: "09:00 - 23:00 | ⭐ 4.9" },
+            { id: 2, name: "Grand Hotel Tashkent", category: "Mehmonxona", lat: 41.3150, lon: 69.2500, distance: "1.1 km", address: "Amir Temur ko'chasi 12", time: "24/7 | ⭐ 4.8" },
+            { id: 3, name: "UNG Gaz Quyish Shoxobchasi", category: "AYOQSH", lat: 41.2900, lon: 69.2300, distance: "800 metr", address: "Kichik halqa yo'li", time: "24/7 | Metan & Benzin" },
+            { id: 4, name: "VIP Barbershop", category: "Sartaroshxona", lat: 41.3050, lon: 69.2450, distance: "500 metr", address: "Oybek ko'chasi 18", time: "09:00 - 21:00 | ⭐ 4.9" },
+            { id: 5, name: "Avto-Express Servis", category: "Avtoservis", lat: 41.2950, lon: 69.2350, distance: "600 metr", address: "Shota Rustaveli ko'chasi", time: "08:30 - 20:00 | ⭐ 4.8" }
+        ];
+
+        var markersLayer = L.layerGroup().addTo(map);
+
+        function displayPlaces(places) {
+            markersLayer.clearLayers();
+            var container = document.getElementById('cardsContainer');
+            container.innerHTML = "";
+
+            if (places.length === 0) {
+                container.innerHTML = "<div class='card' style='text-align:center; color:#777;'>Hech narsa topilmadi. Boshqa so'z yozib ko'ring.</div>";
+                return;
+            }
+
+            places.forEach(function(item) {
+                var marker = L.marker([item.lat, item.lon])
+                    .bindPopup("<b>" + item.name + "</b><br>" + item.address + "<br><i>" + item.distance + "</i>");
+                markersLayer.addLayer(marker);
+
+                var cardHtml = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">${item.name}</div>
+                            <div class="card-distance">${item.distance}</div>
+                        </div>
+                        <div class="card-info">
+                            📍 ${item.address}<br>
+                            🕒 ${item.time}
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-loc" onclick="map.setView([${item.lat}, ${item.lon}], 16)">📍 Xaritada ko'rsatish</button>
+                            <button class="btn btn-bot" onclick="alert('${item.name} boti ochilmoqda...')">📖 Botga o'tish</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        displayPlaces(allPlaces);
+
+        function searchLocations() {
+            var query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) { displayPlaces(allPlaces); return; }
+            var filtered = allPlaces.filter(function(item) {
+                return item.name.toLowerCase().includes(query) || item.category.toLowerCase().includes(query) || item.address.toLowerCase().includes(query);
+            });
+            displayPlaces(filtered);
+        }
+
+        function filterByCategory(catName) {
+            var filtered = allPlaces.filter(function(item) {
+                return item.category.toLowerCase().includes(catName.toLowerCase());
+            });
+            displayPlaces(filtered);
+        }
+
+        function getGPSLocation() {
+            if (navigator.geolocation) {
+                alert("GPS orqali turgan joyingiz aniqlanmoqda...");
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var userLat = position.coords.latitude;
+                    var userLon = position.coords.longitude;
+                    map.setView([userLat, userLon], 15);
+                    L.marker([userLat, userLon]).addTo(map).bindPopup("<b>Siz shu yerdasiz!</b>").openPopup();
+                }, function(error) {
+                    alert("GPS joylashuvni aniqlashda xatolik yuz berdi.");
+                });
+            } else {
+                alert("Brauzeringiz geolokatsiyani qo'llab-quvvatlamaydi.");
+            }
+        }
+
+        // Modal Pop-up Logic
+        function openModal() {
+            document.getElementById('addBusinessModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('addBusinessModal').style.display = 'none';
+        }
+
+        function submitBusiness(event) {
+            event.preventDefault();
+            alert("Arizangiz qabul qilindi! Muvaffaqiyatli yuborildi. Operatorlarimiz tez orada siz bilan bog'lanishadi.");
+            closeModal();
+        }
+    </script>
+</body>
+  </html>
