@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -15,7 +14,10 @@
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .logo { font-size: 18px; font-weight: bold; color: #0088cc; }
+        
+        .header-right { display: flex; gap: 8px; align-items: center; }
         .online-badge { font-size: 11px; background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 12px; font-weight: bold; }
+        .lang-select { font-size: 11px; padding: 3px 6px; border-radius: 6px; border: 1px solid #0088cc; color: #0088cc; font-weight: bold; outline: none; background: #fff; }
 
         /* MAIN SWITCHER */
         .main-switcher { display: flex; background: #e0e0e0; padding: 3px; border-radius: 10px; margin-bottom: 12px; }
@@ -24,7 +26,7 @@
 
         .location-container { margin-bottom: 8px; }
         .region-select { width: 100%; background: #ffffff; border: 1px solid #0088cc; padding: 10px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #0088cc; outline: none; }
-        .gps-btn { width: 100%; background: #28a745; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: bold; margin-bottom: 10px; cursor: pointer; border-radius: 10px; }
+        .gps-btn { width: 100%; background: #28a745; color: white; border: none; padding: 11px; border-radius: 10px; font-size: 13px; font-weight: bold; margin-bottom: 10px; cursor: pointer; }
 
         #map { width: 100%; height: 210px; border-radius: 12px; margin-bottom: 12px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
@@ -32,7 +34,6 @@
         .search-box { flex: 1; padding: 11px 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; outline: none; background: #fff; }
         .search-btn { background: #0088cc; color: white; border: none; padding: 0 16px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
 
-        /* ADDS BUSINESS BUTTON */
         .add-business-btn {
             width: 100%;
             background: linear-gradient(135deg, #0088cc, #005580);
@@ -64,7 +65,7 @@
         .btn-demo { background: #e3f2fd; color: #0d47a1; }
         .btn-rent { background: #28a745; color: white; }
 
-        /* MODAL */
+        /* MODAL WINDOWS */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; padding: 15px; }
         .modal-content { background: #fff; width: 100%; max-width: 400px; border-radius: 14px; padding: 18px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
@@ -76,7 +77,7 @@
         .submit-btn { width: 100%; background: #28a745; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
         /* FOOTER & BOTTOM NAV */
-        .footer-links { margin-top: 15px; background: #fff; border-radius: 10px; padding: 10px; border: 1px solid #eee; }
+        .footer-links { margin-top: 15px; margin-bottom: 15px; background: #fff; border-radius: 10px; padding: 10px; border: 1px solid #eee; }
         .footer-btn { width: 100%; background: none; border: none; text-align: left; padding: 8px 0; font-size: 12px; color: #444; font-weight: 500; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; justify-content: space-between; }
 
         .nav-tabs { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #ddd; padding: 6px; z-index: 1000; }
@@ -88,7 +89,14 @@
 
     <div class="header">
         <div class="logo">Bot Market Plus</div>
-        <div class="online-badge">🟢 Online: 142</div>
+        <div class="header-right">
+            <select class="lang-select">
+                <option value="uz" selected>🇺🇿 UZ</option>
+                <option value="ru">🇷🇺 RU</option>
+                <option value="en">🇬🇧 EN</option>
+            </select>
+            <div class="online-badge">🟢 142</div>
+        </div>
     </div>
 
     <!-- MAIN SWITCHER -->
@@ -97,7 +105,7 @@
         <button class="switch-btn" id="btnBots" onclick="switchSection('bots')">🤖 Botlar Bozori ($1.5)</button>
     </div>
 
-    <!-- SECTION 1: JOY VA XIZMATLAR (MIJOZLAR UCHUN) -->
+    <!-- SECTION 1: JOY VA XIZMATLAR -->
     <div id="sectionPlaces">
         <div class="location-container">
             <select class="region-select" id="regionSelect">
@@ -122,12 +130,11 @@
         <div id="map"></div>
 
         <div class="search-group">
-            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Kafe, mehmonxona, AYOQSH qidiring...">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Kafe, sartaroshxona, avtoservis..." oninput="searchLocations()">
             <button class="search-btn" onclick="searchLocations()">🔍</button>
         </div>
 
-        <!-- BIZNES EGALARI UCHUN REKLAMA VA BOT QO'SHISH TUGMASI -->
-        <button class="add-business-btn" onclick="openAddBusinessModal()">
+        <button class="add-business-btn" onclick="openModal('addBusinessModal')">
             📢 O'z joyingiz va botingizni reklama qiling / qo'shing
         </button>
 
@@ -145,7 +152,7 @@
         <div id="cardsContainer"></div>
     </div>
 
-    <!-- SECTION 2: B2B TAYYOR BOTLAR BOZORI (IJARA) -->
+    <!-- SECTION 2: B2B TAYYOR BOTLAR BOZORI -->
     <div id="sectionBots" style="display: none;">
         <div class="categories-title">🤖 Biznesingiz uchun Tayyor Botlar (Ijara)</div>
 
@@ -154,9 +161,7 @@
                 <div class="card-title">🍽️ Restoran & Kafe Boti</div>
                 <div class="card-price">$1.5 / oy</div>
             </div>
-            <div class="card-info">
-                Elektron menyu, stollarni bron qilish, buyurtma va yetkazib berish boti.
-            </div>
+            <div class="card-info">Elektron menyu, stollarni bron qilish, buyurtma va yetkazib berish boti.</div>
             <div class="card-actions">
                 <a href="https://t.me/bmp_kafe_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
                 <button class="btn btn-rent" onclick="openRentModal('Restoran Boti', '$1.5')">🛒 Ijaraga olish</button>
@@ -168,9 +173,7 @@
                 <div class="card-title">✂️ Sartaroshxona & Salon Boti</div>
                 <div class="card-price">$1.0 / oy</div>
             </div>
-            <div class="card-info">
-                Mijozlarni onlayn navbatga yozish, ustalar jadvali va narxlar ko'rsatkichi.
-            </div>
+            <div class="card-info">Mijozlarni onlayn navbatga yozish, ustalar jadvali va xizmatlar narxi.</div>
             <div class="card-actions">
                 <a href="https://t.me/bmp_salon_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
                 <button class="btn btn-rent" onclick="openRentModal('Sartaroshxona Boti', '$1.0')">🛒 Ijaraga olish</button>
@@ -179,71 +182,72 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">🛍️ Internet-Do'kon Boti</div>
-                <div class="card-price">$1.5 / oy</div>
-            </div>
-            <div class="card-info">
-                Mahsulotlar katalogi, xarid savatchasi va buyurtmalarni avtomatik qabul qilish.
-            </div>
-            <div class="card-actions">
-                <a href="https://t.me/bmp_dokon_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
-                <button class="btn btn-rent" onclick="openRentModal('Internet-Do\'kon Boti', '$1.5')">🛒 Ijaraga olish</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
                 <div class="card-title">🛠️ Avtoservis & Usta Boti</div>
                 <div class="card-price">$1.0 / oy</div>
             </div>
-            <div class="card-info">
-                Avto-ta'mirlash va xizmatlarga masofadan yozilish va narxlar kalkulyatori.
-            </div>
+            <div class="card-info">Avtomobil ta'mirlash va xizmatlarga masofadan navbatga yozilish boti.</div>
             <div class="card-actions">
                 <a href="https://t.me/bmp_avto_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
                 <button class="btn btn-rent" onclick="openRentModal('Avtoservis Boti', '$1.0')">🛒 Ijaraga olish</button>
             </div>
         </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🛍️ Internet-Do'kon Boti</div>
+                <div class="card-price">$1.5 / oy</div>
+            </div>
+            <div class="card-info">Mahsulotlar katalogi, xarid savatchasi va buyurtmalarni qabul qilish boti.</div>
+            <div class="card-actions">
+                <a href="https://t.me/bmp_dokon_demo_bot" target="_blank" class="btn btn-demo">▶️ Demoni sinash</a>
+                <button class="btn btn-rent" onclick="openRentModal('Internet-Do\'kon Boti', '$1.5')">🛒 Ijaraga olish</button>
+            </div>
+        </div>
     </div>
 
-    <!-- MODAL 1: BIZNES VA BOT REKLAMA QILISH SHAKLI -->
+    <!-- FOOTER LINKS -->
+    <div class="footer-links">
+        <button class="footer-btn" onclick="openModal('aboutModal')">
+            <span>ℹ️ Biz haqimizda</span> <span>›</span>
+        </button>
+        <button class="footer-btn" onclick="openModal('feedbackModal')">
+            <span>💬 Xato va kamchiliklar haqida fikr qoldiring</span> <span>›</span>
+        </button>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="nav-tabs">
+        <div class="tab active" id="tabPlaces" onclick="switchSection('places')">📱 Joylar va Xizmatlar</div>
+        <div class="tab" id="tabBots" onclick="switchSection('bots')">🤖 Bot Ijarasi ($1.5)</div>
+    </div>
+
+    <!-- MODAL 1: BIZNES QO'SHISH -->
     <div class="modal" id="addBusinessModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Biznes / Bot Qo'shish & Reklama</div>
+                <div class="modal-title">Biznes / Botni Qo'shish</div>
                 <button class="close-btn" onclick="closeModal('addBusinessModal')">&times;</button>
             </div>
-            <form onsubmit="submitForm(event, 'Biznes qo\'shish arizangiz qabul qilindi!')">
-                <div class="form-group">
-                    <label>Biznes yoki Do'kon nomi:</label>
-                    <input type="text" class="form-control" required placeholder="Masalan: Oazis Fast Food">
-                </div>
-                <div class="form-group">
-                    <label>Kategoriya:</label>
+            <form onsubmit="submitForm(event, 'Biznesingiz muvaffaqiyatli qo\'shishga yuborildi!')">
+                <div class="form-group"><label>Biznes Nomi:</label><input type="text" class="form-control" required placeholder="Masalan: Elite Avtoservis"></div>
+                <div class="form-group"><label>Kategoriya:</label>
                     <select class="form-control">
+                        <option>🛠️ Avtoservis</option>
+                        <option>✂️ Sartaroshxona / Salon</option>
                         <option>🍽️ Restoran va Kafe</option>
                         <option>🏨 Mehmonxona</option>
-                        <option>⛽ AYOQSH (Gaz/Benzin)</option>
-                        <option>✂️ Sartaroshxona / Salon</option>
-                        <option>🛠️ Avtoservis</option>
-                        <option>🛍️ Do'kon va Savdo</option>
-                        <option>🔥 Aksiya va Chegirmalar</option>
+                        <option>⛽ AYOQSH</option>
+                        <option>🛍️ Do'kon</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Aniq Manzil va Mo'ljal:</label>
-                    <input type="text" class="form-control" required placeholder="Toshkent, Yunusobod 4">
-                </div>
-                <div class="form-group">
-                    <label>Telegram Bot yoki Telefon raqam:</label>
-                    <input type="text" class="form-control" required placeholder="@bot_nomi yoki +998901234567">
-                </div>
-                <button type="submit" class="submit-btn">📩 Arizani Yuborish</button>
+                <div class="form-group"><label>Manzil / Mo'ljal:</label><input type="text" class="form-control" required placeholder="Toshkent, Chilonzor"></div>
+                <div class="form-group"><label>Telegram Bot yoki Telefon:</label><input type="text" class="form-control" required placeholder="@bot_name yoki +998901234567"></div>
+                <button type="submit" class="submit-btn">📩 Yuborish</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL 2: BOTNI IJARAGA OLISH SHAKLI -->
+    <!-- MODAL 2: BOTNI IJARAGA OLISH -->
     <div class="modal" id="rentModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -251,46 +255,54 @@
                 <button class="close-btn" onclick="closeModal('rentModal')">&times;</button>
             </div>
             <form onsubmit="submitForm(event, 'Ijara arizangiz qabul qilindi! Tez orada bog\'lanamiz.')">
-                <div class="form-group">
-                    <label>Biznesingiz nomi:</label>
-                    <input type="text" class="form-control" required placeholder="Masalan: Grand Cafe">
-                </div>
-                <div class="form-group">
-                    <label>Telefon raqamingiz:</label>
-                    <input type="text" class="form-control" required placeholder="+998 90 123 45 67">
-                </div>
-                <button type="submit" class="submit-btn">🛒 Ijaraga Olish</button>
+                <div class="form-group"><label>Tanlangan Bot:</label><input type="text" id="rentBotName" class="form-control" readonly style="background:#e9ecef;"></div>
+                <div class="form-group"><label>Biznes Nomi:</label><input type="text" class="form-control" required placeholder="Do'kon yoki servis nomi"></div>
+                <div class="form-group"><label>Telefon Raqam:</label><input type="text" class="form-control" required placeholder="+998 90 123 45 67"></div>
+                <button type="submit" class="submit-btn">🛒 Tasdiqlash</button>
             </form>
         </div>
     </div>
 
-    <!-- FOOTER LINKS -->
-    <div class="footer-links">
-        <button class="footer-btn" onclick="alert('Bot Market Plus - barcha xizmatlar va botlar bozori.')">
-            <span>ℹ️ Biz haqimizda</span> <span>›</span>
-        </button>
-        <button class="footer-btn" onclick="alert('Fikr-mulohazangiz uchun rahmat!')">
-            <span>💬 Fikr-mulohaza va Kanalimiz</span> <span>›</span>
-        </button>
+    <!-- MODAL 3: BIZ HAQIMIZDA -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">ℹ️ Biz Haqimizda</div>
+                <button class="close-btn" onclick="closeModal('aboutModal')">&times;</button>
+            </div>
+            <p style="font-size:13px; line-height:1.5; color:#555;">
+                <b>Bot Market Plus</b> — O'zbekistondagi tadbirkorlar va mijozlarni bog'lovchi innovatsion platforma. Biznes egalari o'z faoliyati uchun tayyor Telegram botlarni $1-$1.5 evaziga ijaraga olishlari va xaritada o'z joylashuvlarini reklama qilishlari mumkin.
+            </p>
+        </div>
     </div>
 
-    <!-- BOTTOM NAV -->
-    <div class="nav-tabs">
-        <div class="tab active" id="tabPlaces" onclick="switchSection('places')">📱 Joylar va Xizmatlar</div>
-        <div class="tab" id="tabBots" onclick="switchSection('bots')">🤖 Botlar Bozori ($1.5)</div>
+    <!-- MODAL 4: XATO VA KAMCHILIKLAR -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">💬 Fikr va Takliflar</div>
+                <button class="close-btn" onclick="closeModal('feedbackModal')">&times;</button>
+            </div>
+            <form onsubmit="submitForm(event, 'Fikr-mulohazangiz uchun rahmat!')">
+                <div class="form-group"><label>Ismingiz:</label><input type="text" class="form-control" required placeholder="Ismingiz"></div>
+                <div class="form-group"><label>Xato yoki taklif haqida yozing:</label><textarea class="form-control" rows="3" required placeholder="Fikringiz..."></textarea></div>
+                <button type="submit" class="submit-btn">📨 Jo'natish</button>
+            </form>
+        </div>
     </div>
 
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         var map = L.map('map').setView([41.2995, 69.2401], 13);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
         var allPlaces = [
-            { id: 1, name: "Oazis Fast Food", category: "Restoran", lat: 41.3110, lon: 69.2405, distance: "350 m", address: "Yunusobod 4-mavze", time: "09:00 - 23:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_kafe_demo_bot" },
-            { id: 2, name: "Grand Hotel Tashkent", category: "Mehmonxona", lat: 41.3150, lon: 69.2500, distance: "1.1 km", address: "Amir Temur ko'chasi 12", time: "24/7 | ⭐ 4.8", bot_link: "https://t.me/bmp_hotel_demo_bot" },
-            { id: 3, name: "UNG Gaz Shoxobchasi", category: "AYOQSH", lat: 41.2900, lon: 69.2300, distance: "800 m", address: "Kichik halqa yo'li", time: "24/7 | Metan & Benzin", bot_link: "#" },
-            { id: 4, name: "VIP Barbershop (50% AKSIYA)", category: "Aksiya Sartaroshxona", lat: 41.3050, lon: 69.2450, distance: "500 m", address: "Oybek ko'chasi 18", time: "09:00 - 21:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_salon_demo_bot" },
-            { id: 5, name: "Avto-Express Servis", category: "Avtoservis", lat: 41.2950, lon: 69.2350, distance: "600 m", address: "Shota Rustaveli ko'chasi", time: "08:30 - 20:00 | ⭐ 4.8", bot_link: "https://t.me/bmp_avto_demo_bot" }
+            { id: 1, name: "Master Avtoservis", category: "Avtoservis", lat: 41.3110, lon: 69.2405, distance: "350 m", address: "Yunusobod 4-mavze", time: "08:00 - 20:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_avto_demo_bot" },
+            { id: 2, name: "VIP Barbershop & Salon", category: "Sartaroshxona", lat: 41.3050, lon: 69.2450, distance: "500 m", address: "Oybek ko'chasi 18", time: "09:00 - 21:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_salon_demo_bot" },
+            { id: 3, name: "Oazis Fast Food (50% Aksiya)", category: "Aksiya Restoran", lat: 41.3200, lon: 69.2600, distance: "900 m", address: "Amir Temur ko'chasi", time: "10:00 - 23:00 | ⭐ 4.8", bot_link: "https://t.me/bmp_kafe_demo_bot" },
+            { id: 4, name: "Grand Hotel Tashkent", category: "Mehmonxona", lat: 41.3150, lon: 69.2500, distance: "1.1 km", address: "Mustaqillik shoh ko'chasi", time: "24/7 | ⭐ 4.8", bot_link: "https://t.me/bmp_hotel_demo_bot" },
+            { id: 5, name: "UNG Gaz Shoxobchasi", category: "AYOQSH", lat: 41.2900, lon: 69.2300, distance: "800 m", address: "Kichik halqa yo'li", time: "24/7 | Metan & Benzin", bot_link: "#" }
         ];
 
         var markersLayer = L.layerGroup().addTo(map);
@@ -315,38 +327,4 @@
                             <div class="card-title">${item.name}</div>
                             <div class="card-price">${item.distance}</div>
                         </div>
-                        <div class="card-info">📍 ${item.address}<br>🕒 ${item.time}</div>
-                        <div class="card-actions">
-                            <button class="btn btn-demo" onclick="map.setView([${item.lat}, ${item.lon}], 16)">📍 Xaritada</button>
-                            <a href="${item.bot_link}" target="_blank" class="btn btn-rent">📖 Botga o'tish</a>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += cardHtml;
-            });
-        }
-
-        displayPlaces(allPlaces);
-
-        function searchLocations() {
-            var query = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (!query) { displayPlaces(allPlaces); return; }
-            var filtered = allPlaces.filter(function(item) {
-                return item.name.toLowerCase().includes(query) || item.category.toLowerCase().includes(query) || item.address.toLowerCase().includes(query);
-            });
-            displayPlaces(filtered);
-        }
-
-        function filterByCategory(catName) {
-            var filtered = allPlaces.filter(function(item) {
-                return item.category.toLowerCase().includes(catName.toLowerCase());
-            });
-            displayPlaces(filtered);
-        }
-
-        function switchSection(sec) {
-            if (sec === 'places') {
-                document.getElementById('sectionPlaces').style.display = 'block';
-                document.getElementById('sectionBots').style.display = 'none';
-                document.getElementById('btnPlaces').classList.add('active');
-                do
+                        <div class="card-info">📍
