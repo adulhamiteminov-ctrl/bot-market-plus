@@ -87,3 +87,79 @@
             <p style="margin-top:10px; font-size:13px;">Telegram orqali bog'laning: @admin</p>
         </div>
     </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        var allPlaces = [
+            { id: 1, name: "Master Avtoservis", category: "Avtoservis", lat: 41.3110, lon: 69.2405, address: "Yunusobod 4", bot: "https://t.me/bmp_avto_demo_bot" },
+            { id: 2, name: "VIP Salon & Barbershop", category: "Sartaroshxona", lat: 41.3050, lon: 69.2450, address: "Oybek ko'chasi", bot: "https://t.me/bmp_salon_demo_bot" },
+            { id: 3, name: "Oazis Kafe", category: "Restoran", lat: 41.3200, lon: 69.2600, address: "Amir Temur ko'chasi", bot: "https://t.me/bmp_kafe_demo_bot" }
+        ];
+
+        var map, markersLayer;
+
+        window.addEventListener('load', function() {
+            map = L.map('map').setView([41.2995, 69.2401], 13);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 16 }).addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+            displayPlaces(allPlaces);
+        });
+
+        function displayPlaces(places) {
+            if(!markersLayer) return;
+            markersLayer.clearLayers();
+            var container = document.getElementById('cardsContainer');
+            container.innerHTML = "";
+            places.forEach(function(item) {
+                L.marker([item.lat, item.lon]).bindPopup(item.name).addTo(markersLayer);
+                container.innerHTML += `
+                    <div class="card">
+                        <div class="card-header">${item.name}</div>
+                        <p style="font-size:12px; color:#666;">📍 ${item.address}</p>
+                        <div style="margin-top:8px;">
+                            <a href="${item.bot}" target="_blank" class="btn-demo">📖 Botga o'tish</a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function searchLocations() {
+            var q = document.getElementById('searchInput').value.toLowerCase();
+            var filtered = allPlaces.filter(i => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
+            displayPlaces(filtered);
+        }
+
+        function filterCat(c) {
+            var filtered = allPlaces.filter(i => i.category.toLowerCase().includes(c.toLowerCase()));
+            displayPlaces(filtered);
+        }
+
+        function switchSection(sec) {
+            if(sec === 'places') {
+                document.getElementById('sectionPlaces').style.display = 'block';
+                document.getElementById('sectionBots').style.display = 'none';
+                document.getElementById('tabPlaces').classList.add('active');
+                document.getElementById('tabBots').classList.remove('active');
+                setTimeout(() => map.invalidateSize(), 100);
+            } else {
+                document.getElementById('sectionPlaces').style.display = 'none';
+                document.getElementById('sectionBots').style.display = 'block';
+                document.getElementById('tabPlaces').classList.remove('active');
+                document.getElementById('tabBots').classList.add('active');
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function getGPSLocation() {
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(p => {
+                    map.setView([p.coords.latitude, p.coords.longitude], 15);
+                    L.marker([p.coords.latitude, p.coords.longitude]).addTo(map).bindPopup("Siz shu yerdasiz!").openPopup();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
