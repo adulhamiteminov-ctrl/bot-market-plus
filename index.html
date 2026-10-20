@@ -1,1 +1,263 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Market Plus</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 12px;
+        }
+
+        /* Top Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0088cc;
+        }
+
+        .lang-select {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        /* Location Bar */
+        .location-btn {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        /* GPS Button */
+        .gps-btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        /* Search Box */
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        /* Categories Grid */
+        .categories {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .cat-card {
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid #eee;
+        }
+
+        /* Business Card */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #eaeaea;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .card-distance {
+            font-size: 11px;
+            color: #28a745;
+            font-weight: bold;
+            background: #e8f5e9;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .card-info {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-loc { background: #e3f2fd; color: #0d47a1; }
+        .btn-bot { background: #0088cc; color: white; }
+        .btn-ai  { background: #f3e5f5; color: #4a148c; }
+
+        /* Navigation Switcher */
+        .nav-tabs {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            display: flex;
+            border-top: 1px solid #ddd;
+            padding: 6px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .tab.active {
+            color: #0088cc;
+            border-bottom: 2px solid #0088cc;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Bot Market Plus</div>
+        <select class="lang-select">
+            <option>🇺🇿 UZ</option>
+            <option>🇷🇺 RU</option>
+            <option>🇬🇧 EN</option>
+        </select>
+    </div>
+
+    <!-- Location Selector -->
+    <button class="location-btn">
+        <span>📍 Toshkent shahri</span>
+        <span>▾</span>
+    </button>
+
+    <!-- GPS Geolocation Button -->
+    <button class="gps-btn" onclick="alert('GPS orqali eng yaqin joylar saralanmoqda...')">
+        🎯 Hozirgi joylashuvim bo'yicha topish
+    </button>
+
+    <!-- Search Input -->
+    <input type="text" class="search-box" placeholder="🔍 Kafe, do'kon, xizmatlarni qidirish...">
+
+    <!-- Categories Grid -->
+    <div class="categories">
+        <div class="cat-card">🍔 Kafelar & Menyu</div>
+        <div class="cat-card">🛍️ Kiyim va Do'konlar</div>
+        <div class="cat-card">✂️ Go'zallik & Avto</div>
+        <div class="cat-card">🚚 Yetkazib berish</div>
+    </div>
+
+    <!-- Sample Business Cards -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">🍔 Oazis Fast Food</div>
+            <div class="card-distance">350 metr</div>
+        </div>
+        <div class="card-info">
+            📍 Yunusobod 4-mavze<br>
+            🕒 09:00 - 23:00 | ⭐ 4.9
+        </div>
+        <div class="card-actions">
+            <button class="btn btn-loc">📍 Lokatsiya</button>
+            <button class="btn btn-bot">📖 Menyu / Bot</button>
+            <button class="btn btn-ai">💬 AI Yordam</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">🍜 Milliy Taomlar Café</div>
+            <div class="card-distance">1.2 km</div>
+        </div>
+        <div class="card-info">
+            📍 Chorsu maydoni<br>
+            🕒 08:00 - 22:00 | ⭐ 4.8
+        </div>
+        <div class="card-actions">
+            <button class="btn btn-loc">📍 Lokatsiya</button>
+            <button class="btn btn-bot">📖 Menyu / Bot</button>
+            <button class="btn btn-ai">💬 AI Yordam</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div style="height: 50px;"></div> <!-- Spacer -->
+    <div class="nav-tabs">
+        <div class="tab active">📱 Joylar va Xizmatlar</div>
+        <div class="tab">🚀 Bot Ijarasi ($1.5/oy)</div>
+    </div>
+
+</body>
+  </html>
