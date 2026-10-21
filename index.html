@@ -216,3 +216,156 @@
             </form>
         </div>
                   </div>
+<!-- YANDEX MAPS API -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=YANGI_API_KEY_SHUYERGA&lang=uz_UZ"></script>
+    <script>
+        var allPlaces = [
+            { id: 1, name: "Farg'ona Avtomarkaz Avtoservis", category: "Avtoservis", lat: 40.3734, lon: 71.7978, distance: "800 m", address: "Sanoat ko'chasi, 12-uy", time: "08:00 - 19:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_avto_demo_bot" },
+            { id: 2, name: "Elite Barbershop Farg'ona", category: "Sartaroshxona", lat: 40.3845, lon: 71.7831, distance: "300 m", address: "Al-Farg'oniy ko'chasi", time: "09:00 - 21:00 | ⭐ 4.8", bot_link: "https://t.me/bmp_salon_demo_bot" },
+            { id: 3, name: "The Dersu Restoran & Kafe", category: "Restoran", lat: 40.3881, lon: 71.7865, distance: "900 m", address: "Navoiy ko'chasi", time: "10:00 - 23:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_kafe_demo_bot" },
+            { id: 4, name: "Grand Fergana Hotel", category: "Mehmonxona", lat: 40.3821, lon: 71.7742, distance: "1.4 km", address: "Mustaqillik ko'chasi, 25", time: "24/7 | ⭐ 4.9", bot_link: "https://t.me/bmp_hotel_demo_bot" },
+            { id: 5, name: "UNG Metan & Benzin AYOQSH", category: "AYOQSH", lat: 40.3650, lon: 71.8100, distance: "3.2 km", address: "Farg'ona halqa yo'li", time: "24/7 | Metan & Benzin", bot_link: "#" },
+            { id: 6, name: "Rivaj Supermarket", category: "Doʻkon", lat: 40.3812, lon: 71.7915, distance: "1.1 km", address: "B. Naqshband ko'chasi", time: "08:00 - 23:00 | ⭐ 4.7", bot_link: "https://t.me/bmp_dokon_demo_bot" }
+        ];
+
+        var myMap;
+
+        // Yandex Xaritasini ishga tushirish
+        ymaps.ready(init);
+
+        function init() {
+            myMap = new ymaps.Map("map", {
+                center: [40.3842, 71.7843], // Farg'ona shahri markazi
+                zoom: 14,
+                controls: ['zoomControl', 'geolocationControl']
+            });
+
+            displayPlaces(allPlaces);
+        }
+
+        function displayPlaces(places) {
+            if (!myMap) return;
+            myMap.geoObjects.removeAll();
+
+            var container = document.getElementById('cardsContainer');
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (places.length === 0) {
+                container.innerHTML = "<div class='card' style='text-align:center; color:#777;'>Bu bo'limda joy topilmadi.</div>";
+                return;
+            }
+
+            places.forEach(function(item) {
+                // Yandex xaritasida belgi yaratish
+                var placemark = new ymaps.Placemark([item.lat, item.lon], {
+                    balloonContentHeader: "<b>" + item.name + "</b>",
+                    balloonContentBody: item.address + "<br>" + item.time,
+                    hintContent: item.name
+                }, {
+                    preset: 'islands#blueIcon'
+                });
+
+                myMap.geoObjects.add(placemark);
+
+                var cardHtml = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">${item.name}</div>
+                            <div class="card-price">${item.distance}</div>
+                        </div>
+                        <div class="card-info">📍 ${item.address}<br>🕒 ${item.time}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-demo" onclick="focusMap(${item.lat}, ${item.lon})">📍 Xaritada</button>
+                            <a href="${item.bot_link}" target="_blank" class="btn btn-rent">📖 Botga o'tish</a>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        function focusMap(lat, lon) {
+            if (myMap) {
+                myMap.setCenter([lat, lon], 16, { checkZoomRange: true, duration: 500 });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function searchLocations() {
+            var query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) { displayPlaces(allPlaces); return; }
+            var filtered = allPlaces.filter(function(item) {
+                return item.name.toLowerCase().includes(query) || item.category.toLowerCase().includes(query) || item.address.toLowerCase().includes(query);
+            });
+            displayPlaces(filtered);
+        }
+
+        function filterByCategory(catName) {
+            var filtered = allPlaces.filter(function(item) {
+                return item.category.toLowerCase().includes(catName.toLowerCase());
+            });
+            displayPlaces(filtered);
+        }
+
+        function switchSection(sec) {
+            var secPlaces = document.getElementById('sectionPlaces');
+            var secBots = document.getElementById('sectionBots');
+            var btnPl = document.getElementById('btnPlaces');
+            var btnBt = document.getElementById('btnBots');
+            var tabPl = document.getElementById('tabPlaces');
+            var tabBt = document.getElementById('tabBots');
+
+            if (sec === 'places') {
+                secPlaces.style.display = 'block';
+                secBots.style.display = 'none';
+                btnPl.classList.add('active');
+                btnBt.classList.remove('active');
+                tabPl.classList.add('active');
+                tabBt.classList.remove('active');
+                if (myMap) myMap.container.fitToViewport();
+            } else {
+                secPlaces.style.display = 'none';
+                secBots.style.display = 'block';
+                btnPl.classList.remove('active');
+                btnBt.classList.add('active');
+                tabPl.classList.remove('active');
+                tabBt.classList.add('active');
+            }
+        }
+
+        function openModal(id) { var m = document.getElementById(id); if(m) m.style.display = 'flex'; }
+        function closeModal(id) { var m = document.getElementById(id); if(m) m.style.display = 'none'; }
+
+        function openRentModal(title, price) {
+            document.getElementById('modalBotTitle').innerText = title + " (" + price + ")";
+            document.getElementById('rentBotName').value = title;
+            openModal('rentModal');
+        }
+
+        function submitForm(e, msg) {
+            e.preventDefault();
+            alert(msg);
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+
+        function getGPSLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    var lat = pos.coords.latitude;
+                    var lon = pos.coords.longitude;
+                    if (myMap) {
+                        myMap.setCenter([lat, lon], 16);
+                        var userPlacemark = new ymaps.Placemark([lat, lon], {
+                            hintContent: "Siz shu yerdasiz!"
+                        }, {
+                            preset: 'islands#redDotIcon'
+                        });
+                        myMap.geoObjects.add(userPlacemark);
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
