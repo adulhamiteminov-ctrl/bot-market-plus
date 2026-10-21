@@ -289,3 +289,174 @@
             </form>
         </div>
               </div>
+<!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        var allPlaces = [
+            { id: 1, name: "Master Avtoservis", category: "Avtoservis", lat: 41.3110, lon: 69.2405, distance: "350 m", address: "Yunusobod 4-mavze", time: "08:00 - 20:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_avto_demo_bot" },
+            { id: 2, name: "VIP Barbershop & Salon", category: "Sartaroshxona", lat: 41.3050, lon: 69.2450, distance: "500 m", address: "Oybek ko'chasi 18", time: "09:00 - 21:00 | ⭐ 4.9", bot_link: "https://t.me/bmp_salon_demo_bot" },
+            { id: 3, name: "Oazis Fast Food (50% Aksiya)", category: "Aksiya Restoran", lat: 41.3200, lon: 69.2600, distance: "900 m", address: "Amir Temur ko'chasi", time: "10:00 - 23:00 | ⭐ 4.8", bot_link: "https://t.me/bmp_kafe_demo_bot" },
+            { id: 4, name: "Grand Hotel Tashkent", category: "Mehmonxona", lat: 41.3150, lon: 69.2500, distance: "1.1 km", address: "Mustaqillik shoh ko'chasi", time: "24/7 | ⭐ 4.8", bot_link: "https://t.me/bmp_hotel_demo_bot" },
+            { id: 5, name: "UNG Gaz Shoxobchasi", category: "AYOQSH", lat: 41.2900, lon: 69.2300, distance: "800 m", address: "Kichik halqa yo'li", time: "24/7 | Metan & Benzin", bot_link: "#" }
+        ];
+
+        var map;
+        var markersLayer;
+
+        window.addEventListener('load', function() {
+            try {
+                map = L.map('map', {
+                    minZoom: 10,
+                    maxZoom: 16,
+                    bounceAtZoom: false
+                }).setView([41.2995, 69.2401], 13);
+
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 16,
+                    minZoom: 10,
+                    keepBuffer: 3,
+                    tileSize: 256
+                }).addTo(map);
+
+                markersLayer = L.layerGroup().addTo(map);
+                displayPlaces(allPlaces);
+
+                map.on('zoomend moveend', function() {
+                    if (map) map.invalidateSize();
+                });
+
+                setTimeout(function() {
+                    if (map) map.invalidateSize();
+                }, 300);
+
+            } catch (e) {
+                console.error("Map init error:", e);
+            }
+        });
+
+        function displayPlaces(places) {
+            if (!markersLayer) return;
+            markersLayer.clearLayers();
+            var container = document.getElementById('cardsContainer');
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (places.length === 0) {
+                container.innerHTML = "<div class='card' style='text-align:center; color:#777;'>Hech narsa topilmadi.</div>";
+                return;
+            }
+
+            places.forEach(function(item) {
+                var marker = L.marker([item.lat, item.lon]).bindPopup("<b>" + item.name + "</b><br>" + item.address);
+                markersLayer.addLayer(marker);
+
+                var cardHtml = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">${item.name}</div>
+                            <div class="card-price">${item.distance}</div>
+                        </div>
+                        <div class="card-info">📍 ${item.address}<br>🕒 ${item.time}</div>
+                        <div class="card-actions">
+                            <button class="btn btn-demo" onclick="focusMap(${item.lat}, ${item.lon})">📍 Xaritada</button>
+                            <a href="${item.bot_link}" target="_blank" class="btn btn-rent">📖 Botga o'tish</a>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        function focusMap(lat, lon) {
+            if (map) {
+                map.setView([lat, lon], 16);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function searchLocations() {
+            var query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) { displayPlaces(allPlaces); return; }
+            var filtered = allPlaces.filter(function(item) {
+                return item.name.toLowerCase().includes(query) || item.category.toLowerCase().includes(query) || item.address.toLowerCase().includes(query);
+            });
+            displayPlaces(filtered);
+        }
+
+        function filterByCategory(catName) {
+            var filtered = allPlaces.filter(function(item) {
+                return item.category.toLowerCase().includes(catName.toLowerCase());
+            });
+            displayPlaces(filtered);
+        }
+
+        function switchSection(sec) {
+            var secPlaces = document.getElementById('sectionPlaces');
+            var secBots = document.getElementById('sectionBots');
+            var btnPl = document.getElementById('btnPlaces');
+            var btnBt = document.getElementById('btnBots');
+            var tabPl = document.getElementById('tabPlaces');
+            var tabBt = document.getElementById('tabBots');
+
+            if (sec === 'places') {
+                secPlaces.style.display = 'block';
+                secBots.style.display = 'none';
+                btnPl.classList.add('active');
+                btnBt.classList.remove('active');
+                tabPl.classList.add('active');
+                tabBt.classList.remove('active');
+                
+                setTimeout(function() {
+                    if (map) map.invalidateSize();
+                }, 150);
+            } else {
+                secPlaces.style.display = 'none';
+                secBots.style.display = 'block';
+                btnPl.classList.remove('active');
+                btnBt.classList.add('active');
+                tabPl.classList.remove('active');
+                tabBt.classList.add('active');
+            }
+        }
+
+        function openModal(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
+        }
+
+        function openRentModal(botTitle, price) {
+            document.getElementById('modalBotTitle').innerText = botTitle + " (" + price + ")";
+            document.getElementById('rentBotName').value = botTitle;
+            openModal('rentModal');
+        }
+
+        function submitForm(e, msg) {
+            e.preventDefault();
+            alert(msg);
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+
+        function getGPSLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    var lat = pos.coords.latitude;
+                    var lon = pos.coords.longitude;
+                    if (map) {
+                        map.setView([lat, lon], 15);
+                        L.marker([lat, lon]).addTo(map).bindPopup("<b>Siz shu yerdasiz!</b>").openPopup();
+                    }
+                }, function(err) {
+                    alert("GPS joylashuvni aniqlashda xatolik yuz berdi.");
+                });
+            } else {
+                alert("Brauzeringiz geolokatsiyani qo'llab-quvvatlamaydi.");
+            }
+        }
+    </script>
+</body>
+</html>
