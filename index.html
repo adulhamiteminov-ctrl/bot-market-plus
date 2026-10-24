@@ -126,7 +126,44 @@
         <div class="card">
             <div class="card-header">
               <!-- Fast-Food Bot Kartochkasi (Web App ichida ko'rinadi) -->
-   
+   <!-- Fast-Food Bot Kartochkasi (To'liq va tartibli dizayn) -->
+<div class="bot-card" style="background: var(--tg-theme-bg-color, #ffffff); color: var(--tg-theme-text-color, #000000); padding: 16px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e0e0e0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: left;">
+    
+    <!-- Sarlavha -->
+    <h3 style="margin-top: 0; margin-bottom: 8px; color: var(--tg-theme-text-color, #000000); font-size: 16px;">
+        🍔 Fast-Food & Kafe Boti
+    </h3>
+    
+    <!-- Tavsif -->
+    <p style="font-size: 14px; margin-bottom: 10px; opacity: 0.85;">
+        Interaktiv menyu, savat, telefon raqam va GPS lokatsiyani avtomatik olish, to'liq admin panel.
+    </p>
+    
+    <!-- Narx -->
+    <p style="font-size: 14px; margin-bottom: 12px;">
+        <b>Narxi:</b> $3 - $4 / oy
+    </p>
+    
+    <!-- Asosiy tugmalar (Demo va Ijaraga olish - Bir xil o'lcham va rangda) -->
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <a href="https://t.me/SizningDemoBotingiz_bot" target="_blank" style="flex: 1; background: #0088cc; color: white; padding: 10px; text-align: center; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+            👁 Demo
+        </a>
+        <button onclick="rentFastFoodBot()" style="flex: 1; background: #28a745; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
+            💳 Ijaraga olish
+        </button>
+    </div>
+
+    <!-- Qo'shimcha tugmalar (Pastda alohida qator bo'lib joylashadi va dizayni bir xil) -->
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+        <button onclick="showAbout()" style="width: 100%; background: #6c757d; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
+            ℹ️ Biz haqimizda
+        </button>
+        <button onclick="showFeedback()" style="width: 100%; background: #6c757d; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
+            💬 O'z fikringizni qoldiring
+        </button>
+    </div>
+</div>
 
     <!-- MODAL WINDOWS -->
     <div class="modal" id="addBusinessModal">
