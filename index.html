@@ -7,80 +7,93 @@
     <!-- Yandex Map API -->
     <script src="https://api-maps.yandex.ru/2.1/?apikey=YOUR_API_KEY&lang=uz_UZ" type="text/javascript"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; color: #333; }
-        .header { background: #0088cc; color: white; padding: 15px; text-align: center; }
+        :root {
+            --bg-color: #0b132b;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --text-color: #ffffff;
+            --text-muted: #94a3b8;
+            --accent-blue: #0072ff;
+            --accent-green: #10b981;
+        }
+
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-color); }
+        
+        .header { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; padding: 15px; text-align: center; border-bottom: 1px solid var(--card-border); }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; }
-        .header-select { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 4px 8px; border-radius: 4px; outline: none; }
+        .header-select { background: rgba(255,255,255,0.1); color: white; border: 1px solid var(--card-border); padding: 5px 10px; border-radius: 6px; outline: none; }
         .header-select option { color: #333; }
         
-        /* Sahifalar bo'yicha o'tish tugmalari (Tabs) */
-        .nav-tabs { display: flex; background: #006699; padding: 5px; gap: 5px; }
-        .nav-tab { flex: 1; background: none; border: none; color: white; padding: 10px; font-weight: bold; cursor: pointer; border-radius: 6px; font-size: 14px; text-align: center; }
-        .nav-tab.active { background: white; color: #0088cc; }
+        /* Navigatsiya Tablar */
+        .nav-tabs { display: flex; background: #0f172a; padding: 8px; gap: 8px; border-bottom: 1px solid var(--card-border); }
+        .nav-tab { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 10px; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 14px; text-align: center; transition: 0.3s; }
+        .nav-tab.active { background: var(--accent-blue); color: white; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4); }
 
         .container { padding: 15px; max-width: 600px; margin: auto; }
         .section { display: none; }
         .section.active { display: block; }
 
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* Premium Glassmorphism Kartochkalar */
+        .card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+        
+        /* Slayder / Banner Banner */
+        .hero-banner { position: relative; width: 100%; height: 160px; border-radius: 12px; overflow: hidden; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; text-align: center; background: #1e293b; }
+        .hero-banner img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; animation: fadeInOut 9s infinite; }
+        .hero-overlay { position: relative; z-index: 2; background: rgba(0,0,0,0.4); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(1.05); }
+            15% { opacity: 0.7; transform: scale(1); }
+            33% { opacity: 0.7; }
+            45% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .card-title { font-size: 16px; font-weight: bold; }
-        .card-price { color: #28a745; font-weight: bold; }
-        .card-info { font-size: 14px; color: #666; margin-bottom: 12px; line-height: 1.4; }
+        .card-title { font-size: 18px; font-weight: bold; }
+        .card-price { color: var(--accent-green); font-weight: bold; font-size: 16px; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 20px; }
+        .card-info { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5; }
         
         /* Tugmalar */
-        .btn-group-main { display: flex; gap: 10px; margin-bottom: 10px; }
-        .btn-demo { flex: 1; background: #0088cc; color: white; padding: 10px; text-align: center; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; }
-        .btn-rent { flex: 1; background: #28a745; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-group-main { display: flex; gap: 10px; margin-bottom: 12px; }
+        .btn-demo { flex: 1; background: rgba(0, 114, 255, 0.2); color: #38bdf8; border: 1px solid rgba(0, 114, 255, 0.4); padding: 12px; text-align: center; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-rent { flex: 1; background: var(--accent-green); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-rent:hover { opacity: 0.9; transform: translateY(-1px); }
         
         .btn-group-sub { display: flex; flex-direction: column; gap: 8px; }
-        .btn-custom-sub { width: 100%; background: #ffffff; color: #000000; border: 1px solid #ccc; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; text-align: left; display: flex; align-items: center; gap: 8px; }
+        .btn-custom-sub { width: 100%; background: rgba(255, 255, 255, 0.05); color: #ffffff; border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 14px; text-align: left; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .btn-custom-sub:hover { background: rgba(255, 255, 255, 0.1); }
 
-        /* Qidiruv va xarita boshqaruvi */
+        /* Qidiruv va boshqaruv */
         .search-box { display: flex; gap: 8px; margin-bottom: 10px; }
-        .form-control { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        .action-btn { background: #0088cc; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .form-control { width: 100%; padding: 10px; background: rgba(255,255,255,0.07); border: 1px solid var(--card-border); color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
+        .form-control::placeholder { color: #64748b; }
+        .action-btn { background: var(--accent-blue); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap; }
 
-        /* Modal oyna dizayni */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        /* Modal oyna */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #1e293b; border: 1px solid var(--card-border); padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #777; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 13px; margin-bottom: 5px; font-weight: bold; }
-        .submit-btn { width: 100%; background: #0088cc; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px; }
+        .close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; margin-bottom: 6px; font-weight: bold; color: var(--text-muted); }
+        .submit-btn { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4); }
     </style>
 </head>
 <body>
 
-    <!-- Header (Til va Viloyat tanlash bilan) -->
+    <!-- Header -->
     <div class="header">
         <div class="container" style="padding: 0;">
             <div class="header-top">
-                <!-- Til tanlash -->
-                <div>
-                    🌐 <select class="header-select" id="langSelect">
-                        <option value="uz">O'zbekcha</option>
-                        <option value="ru">Русский</option>
-                    </select>
-                </div>
-                <!-- Viloyat tanlash -->
-                <div>
-                    📍 <select class="header-select" id="regionSelect">
-                        <option value="all">Butun O'zbekiston</option>
-                        <option value="tashkent">Toshkent sh. / vil.</option>
-                        <option value="fergana">Farg'ona vodiysi</option>
-                        <option value="samarkand">Samarqand</option>
-                        <option value="bukhara">Buxoro</option>
-                        <option value="other">Boshqa viloyatlar</option>
-                    </select>
-                </div>
+                <div>🌐 <select class="header-select" id="langSelect"><option value="uz">O'zbekcha</option><option value="ru">Русский</option></select></div>
+                <div>📍 <select class="header-select" id="regionSelect"><option value="all">O'zbekiston</option><option value="tashkent">Toshkent</option><option value="fergana">Farg'ona</option></select></div>
             </div>
-            <div style="font-size: 18px; font-weight: bold;">Bot Market Plus</div>
+            <div style="font-size: 20px; font-weight: bold; letter-spacing: 0.5px;">Bot Market Plus 🚀</div>
         </div>
     </div>
 
-    <!-- 2 ta Sahifa (Tab) o'tish menyusi -->
+    <!-- Tab Menyular -->
     <div class="nav-tabs">
         <button class="nav-tab active" onclick="switchSection('bots')">🤖 Botlar va Ijara</button>
         <button class="nav-tab" onclick="switchSection('mapSection')">🗺 Xarita va Hamkorlar</button>
@@ -88,124 +101,103 @@
 
     <div class="container">
         
-        <!-- 1-SAHIFA: BOTLAR VA IJARA -->
+        <!-- 1-SAHIFA: BOTLAR -->
         <div id="bots" class="section active">
-            
-            <!-- Reklama qilinayotgan / Ijara bot kartochkasi -->
             <div class="card">
+                <!-- Fast-Food va Kuryer Slayder Banneri -->
+                <div class="hero-banner">
+                    <!-- Rasmlarketma-ketligi va oxirida Kuryer Velosipedda -->
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=60" style="animation-delay: 0s;" alt="Burger">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=60" style="animation-delay: 3s;" alt="Pizza">
+                    <img src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=60" style="animation-delay: 6s;" alt="Delivery Courier Bicycle">
+                    <div class="hero-overlay">
+                        <span style="font-size: 24px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">🍔 Fast-Food & Delivery Bot</span>
+                        <span style="font-size: 13px; color: #38bdf8; margin-top: 5px;">Tezkor menyu + Avto Kuryer buyurtmasi</span>
+                    </div>
+                </div>
+
                 <div class="card-header">
-                    <div class="card-title">🍔 Fast-Food & Cafe Bot</div>
+                    <div class="card-title">🚀 Fast-Food Kafe Boshqaruvi</div>
                     <div class="card-price">$3 - $4 / oy</div>
                 </div>
                 <div class="card-info">
-                    Interaktiv menyu, savat, telefon raqam va GPS lokatsiyani avtomatik olish, to'liq admin panel. O'zbekiston bo'ylab barcha kafe va fast-fudlar uchun tayyor yechim.
+                    Mijozlar uchun qulay interaktiv menyu, savat, GPS lokatsiya orqali yetkazib berish va tadbirkor uchun maxsus admin panel. Kuryerlar faoliyatini boshqarish uchun mukammal yechim!
                 </div>
                 
                 <div class="btn-group-main">
-                    <a href="https://t.me/fast_food_menejer_bot" target="_blank" class="btn-demo">
-                        👁 Demo
-                    </a>
-                    <button onclick="openRentModal('Fast-Food & Cafe Bot', '$3 - $4')" class="btn-rent">
-                        💳 Ijaraga olish
-                    </button>
+                    <a href="https://t.me/fast_food_menejer_bot" target="_blank" class="btn-demo">👁 Demo Bot</a>
+                    <button onclick="openRentModal('Fast-Food & Cafe Bot', '$3 - $4')" class="btn-rent">⚡ Ijaraga olish</button>
                 </div>
 
                 <div class="btn-group-sub">
-                    <button onclick="openModal('aboutModal')" class="btn-custom-sub">
-                        ℹ️ Biz haqimizda (Platforma haqida)
-                    </button>
-                    <button onclick="openModal('feedbackModal')" class="btn-custom-sub">
-                        💬 O'z fikringizni qoldiring
-                    </button>
-                    
+                    <button onclick="openModal('aboutModal')" class="btn-custom-sub">ℹ️ Biz haqimizda (Platforma)</button>
+                    <button onclick="openModal('feedbackModal')" class="btn-custom-sub">💬 O'z fikringizni qoldiring</button>
                 </div>
             </div>
-
         </div>
 
-        <!-- 2-SAHIFA: XARITA VA HAMKORLAR -->
+        <!-- 2-SAHIFA: XARITA -->
         <div id="mapSection" class="section">
             <div class="card">
-                <div class="card-title" style="margin-bottom: 10px;">🗺 O'zbekiston bo'ylab hamkorlar</div>
+                <div class="card-title" style="margin-bottom: 12px;">🗺 O'zbekiston bo'ylab hamkorlar</div>
                 
-                <!-- Qidiruv va GPS tugmasi -->
                 <div class="search-box">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Manzil yoki shahar nomini yozing...">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Shahar yoki manzilni yozing...">
                     <button onclick="searchLocation()" class="action-btn">🔍 Qidirish</button>
                 </div>
-                <button onclick="getGPSLocation()" class="action-btn" style="width: 100%; margin-bottom: 10px; background: #28a745;">
+                <button onclick="getGPSLocation()" class="action-btn" style="width: 100%; margin-bottom: 12px; background: #059669;">
                     📍 Mening hozirgi joylashuvim
                 </button>
 
-                <!-- Xarita konteyneri -->
-                <div id="map" style="width: 100%; height: 300px; border-radius: 8px;"></div>
+                <div id="map" style="width: 100%; height: 280px; border-radius: 12px; margin-bottom: 12px;"></div>
+
+                <button onclick="openModal('addBusinessModal')" class="action-btn" style="width: 100%; background: rgba(0, 114, 255, 0.2); border: 1px solid rgba(0, 114, 255, 0.4); color: #38bdf8; padding: 12px; font-weight: bold; border-radius: 10px; cursor: pointer;">
+                    ➕ O'z biznesingizni xaritaga qo'shing
+                </button>
             </div>
         </div>
 
     </div>
-      <button onclick="openModal('addBusinessModal')" class="btn-custom-sub" style="background: #e8f4fd; color: #0088cc; border-color: #bce8f1;">
-                        ➕ O'z biznesingizni qo'shing
-                    </button>
-                </div>
-            </div>
 
-</div>
-    <!-- MODAL OYNALAR -->
-    
-    <!-- Biznes qo'shish -->
+    <!-- MODALLAR -->
     <div class="modal" id="addBusinessModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div style="font-weight: bold;">Biznesingizni Qo'shish</div>
-                <button class="close-btn" onclick="closeModal('addBusinessModal')">&times;</button>
-            </div>
+            <div class="modal-header"><div style="font-weight: bold;">Biznesingizni Qo'shish</div><button class="close-btn" onclick="closeModal('addBusinessModal')">&times;</button></div>
             <form onsubmit="submitForm(event, 'business')">
                 <div class="form-group"><label>Biznes Nomi:</label><input type="text" id="bizName" class="form-control" required placeholder="Masalan: Milliy Taomlar"></div>
-                <div class="form-group"><label>Viloyat / Manzil:</label><input type="text" id="bizAddress" class="form-control" required placeholder="Toshkent sh., Chilonzor"></div>
-                <div class="form-group"><label>Aloqa (Telefon / Telegram):</label><input type="text" id="bizContact" class="form-control" required placeholder="+998 90 123 45 67"></div>
+                <div class="form-group"><label>Manzil / Hudud:</label><input type="text" id="bizAddress" class="form-control" required placeholder="Toshkent sh., Chilonzor"></div>
+                <div class="form-group"><label>Telefon / Telegram:</label><input type="text" id="bizContact" class="form-control" required placeholder="+998 90 123 45 67"></div>
                 <button type="submit" class="submit-btn">📩 Yuborish</button>
             </form>
         </div>
     </div>
 
-    <!-- Ijaraga olish -->
     <div class="modal" id="rentModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div style="font-weight: bold;" id="modalBotTitle">Botni Ijaraga Olish</div>
-                <button class="close-btn" onclick="closeModal('rentModal')">&times;</button>
-            </div>
+            <div class="modal-header"><div style="font-weight: bold;" id="modalBotTitle">Botni Ijaraga Olish</div><button class="close-btn" onclick="closeModal('rentModal')">&times;</button></div>
             <form onsubmit="submitForm(event, 'rent')">
-                <div class="form-group"><label>Tanlangan Bot:</label><input type="text" id="rentBotName" class="form-control" readonly style="background:#e9ecef;"></div>
-                <div class="form-group"><label>Biznes Nomi:</label><input type="text" id="rentBusinessName" class="form-control" required placeholder="Tadbirkorlik nomi"></div>
+                <div class="form-group"><label>Tanlangan Bot:</label><input type="text" id="rentBotName" class="form-control" readonly style="background:rgba(255,255,255,0.05); color:#94a3b8;"></div>
+                <div class="form-group"><label>Biznes / Kafe Nomi:</label><input type="text" id="rentBusinessName" class="form-control" required placeholder="Tadbirkorlik nomi"></div>
                 <div class="form-group"><label>Telefon raqam:</label><input type="text" id="rentPhone" class="form-control" required placeholder="+998 90 123 45 67"></div>
                 <button type="submit" class="submit-btn">🛒 Tasdiqlash va So'rov Yuborish</button>
             </form>
         </div>
     </div>
 
-    <!-- Biz haqimizda -->
     <div class="modal" id="aboutModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div style="font-weight: bold;">Biz Haqimizda</div>
-                <button class="close-btn" onclick="closeModal('aboutModal')">&times;</button>
-            </div>
-            <p style="font-size: 14px; line-height: 1.5; color: #444;">
-                <b>Bot Market Plus</b> — O'zbekistondagi kichik va o'rta biznes egalari uchun maxsus yaratilgan zamonaviy SaaS platformadir.<br><br>
-                Bizning maqsadimiz — tadbirkorlarga qimmat dasturlash xarajatlarisiz, tayyor va sifatli Telegram botlarni arzon obuna (ijara) asosida taqdim etish va ularning biznesini avtomatlashtirishga yordam berish.
+            <div class="modal-header"><div style="font-weight: bold;">Biz Haqimizda</div><button class="close-btn" onclick="closeModal('aboutModal')">&times;</button></div>
+            <p style="font-size: 14px; line-height: 1.6; color: var(--text-muted);">
+                <b>Bot Market Plus</b> — O'zbekistondagi kichik va o'rta biznes egalari uchun yaratilgan zamonaviy SaaS platformadir.<br><br>
+                Qimmat dasturlash xarajatlarisiz, tayyor Telegram botlarni obuna asosida ijaraga oling va biznesingizni avtomatlashtiring!
             </p>
             <button onclick="closeModal('aboutModal')" class="submit-btn">Tushunarli</button>
         </div>
     </div>
 
-    <!-- Fikr bildirish -->
     <div class="modal" id="feedbackModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div style="font-weight: bold;">O'z Fikringizni Qoldiring</div>
-                <button class="close-btn" onclick="closeModal('feedbackModal')">&times;</button>
-            </div>
+            <div class="modal-header"><div style="font-weight: bold;">O'z Fikringizni Qoldiring</div><button class="close-btn" onclick="closeModal('feedbackModal')">&times;</button></div>
             <form onsubmit="submitFeedback(event)">
                 <div class="form-group"><label>Ismingiz:</label><input type="text" id="fbName" class="form-control" required placeholder="Ismingizni kiriting"></div>
                 <div class="form-group"><label>Fikr yoki taklifingiz:</label><textarea id="fbText" class="form-control" rows="3" required placeholder="Platforma haqida fikringiz..."></textarea></div>
@@ -213,167 +205,95 @@
             </form>
         </div>
     </div>
+
+    <!-- JavaScript Qismi -->
     <script>
         var myMap;
-
-        // Yandex xaritasini ishga tushirish (Butun O'zbekiston markazidan ochiladi)
         ymaps.ready(init);
 
         function init() {
             myMap = new ymaps.Map("map", {
-                center: [41.3111, 69.2797], // Toshkent markazi (O'zbekiston)
-                zoom: 6, // Butun mamlakat ko'rinishi uchun
+                center: [41.3111, 69.2797],
+                zoom: 6,
                 controls: ['zoomControl', 'geolocationControl']
             });
         }
 
-        // Sahifalarni almashtirish (Tabs)
         function switchSection(sectionId) {
-            // Hamma bo'limlarni yashirish
-            var sections = document.querySelectorAll('.section');
-            sections.forEach(function(sec) {
-                sec.classList.remove('active');
-            });
-
-            // Tanlangan bo'limni chiqarish
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-
-            // Tab tugmalarining aktiv holatini o'zgartirish
-            var tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(function(tab) {
-                tab.classList.remove('active');
-            });
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            // Xarita ochilganda uning o'lchamini yangilab qo'yish
             if (sectionId === 'mapSection' && myMap) {
-                setTimeout(function() {
-                    myMap.container.fitToViewport();
-                }, 100);
+                setTimeout(() => myMap.container.fitToViewport(), 100);
             }
         }
 
-        // Modal oynalarni ochish va yopish
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // Ijaraga olish modalini ochish va bot nomini avtomatik yozish
-        function openRentModal(botName, botPrice) {
-            document.getElementById('modalBotTitle').innerText = botName + " (" + botPrice + ")";
-            document.getElementById('rentBotName').value = botName;
+        function openRentModal(name, price) {
+            document.getElementById('modalBotTitle').innerText = name + " (" + price + ")";
+            document.getElementById('rentBotName').value = name;
             openModal('rentModal');
         }
 
-        // Xaritadan shahar yoki manzilni qidirish
         function searchLocation() {
             var query = document.getElementById('searchInput').value.trim();
-            if (!query) {
-                alert("Iltimos, qidirish uchun shahar yoki manzil nomini kiriting!");
-                return;
-            }
-
-            ymaps.geocode(query, { results: 1 }).then(function (res) {
-                var firstGeoObject = res.geoObjects.get(0);
-                if (!firstGeoObject) {
-                    alert("Bunday manzil topilmadi. Qaytadan urinib ko'ring.");
-                    return;
-                }
-
-                var coords = firstGeoObject.geometry.getCoordinates();
+            if (!query) { alert("Manzilni kiriting!"); return; }
+            ymaps.geocode(query, { results: 1 }).then(res => {
+                var obj = res.geoObjects.get(0);
+                if (!obj) { alert("Topilmadi"); return; }
+                var coords = obj.geometry.getCoordinates();
                 myMap.setCenter(coords, 14, { duration: 500 });
-
-                var searchPlacemark = new ymaps.Placemark(coords, {
-                    balloonContent: query
-                }, {
-                    preset: 'islands#redDotIcon'
-                });
-
                 myMap.geoObjects.removeAll();
-                myMap.geoObjects.add(searchPlacemark);
-            }).catch(function (err) {
-                alert("Qidirishda xatolik yuz berdi!");
+                myMap.geoObjects.add(new ymaps.Placemark(coords, { balloonContent: query }, { preset: 'islands#redDotIcon' }));
             });
         }
 
-        // Foydalanuvchining hozirgi GPS joylashuvini aniqlash
         function getGPSLocation() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(pos) {
-                    var lat = pos.coords.latitude;
-                    var lon = pos.coords.longitude;
-                    if (myMap) {
-                        myMap.setCenter([lat, lon], 15, { duration: 500 });
-                        var userPlacemark = new ymaps.Placemark([lat, lon], {
-                            balloonContent: "Siz turgan joy"
-                        }, {
-                            preset: 'islands#blueCircleDotIcon'
-                        });
-                        myMap.geoObjects.add(userPlacemark);
-                    }
-                }, function(error) {
-                    alert("Joylashuvni aniqlab bo'lmadi. Brauzer GPS ruxsatini tekshiring.");
-                });
-            } else {
-                alert("Brauzeringiz GPS xizmatini qo'llab-quvvatlamaydi.");
+                navigator.geolocation.getCurrentPosition(pos => {
+                    var coords = [pos.coords.latitude, pos.coords.longitude];
+                    myMap.setCenter(coords, 15, { duration: 500 });
+                    myMap.geoObjects.add(new ymaps.Placemark(coords, { balloonContent: "Siz turgan joy" }, { preset: 'islands#blueCircleDotIcon' }));
+                }, () => alert("Joylashuvni aniqlab bo'lmadi."));
             }
         }
 
-        // Flask API ga ma'lumot yuborish (Ijaraga olish va Biznes qo'shish)
         function submitForm(e, type) {
             e.preventDefault();
-            
-            let data = {};
-            let endpoint = "";
+            let data = type === 'rent' ? {
+                bot_name: document.getElementById('rentBotName').value,
+                business_name: document.getElementById('rentBusinessName').value,
+                phone: document.getElementById('rentPhone').value
+            } : {
+                name: document.getElementById('bizName').value,
+                address: document.getElementById('bizAddress').value,
+                contact: document.getElementById('bizContact').value
+            };
 
-            if (type === 'rent') {
-                data = {
-                    bot_name: document.getElementById('rentBotName').value,
-                    business_name: document.getElementById('rentBusinessName').value,
-                    phone: document.getElementById('rentPhone').value
-                };
-                endpoint = 'http://127.0.0.1:5000/api/rent-bot'; // Flask server manzili
-            } else if (type === 'business') {
-                data = {
-                    name: document.getElementById('bizName').value,
-                    address: document.getElementById('bizAddress').value,
-                    contact: document.getElementById('bizContact').value
-                };
-                endpoint = 'http://127.0.0.1:5000/api/register'; // Flask server manzili
-            }
+            let endpoint = type === 'rent' ? 'http://127.0.0.1:5000/api/rent-bot' : 'http://127.0.0.1:5000/api/register';
 
-            // Serverga fetch orqali jo'natish
             fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(result => {
+            .then(res => res.json())
+            .catch(() => {})
+            .finally(() => {
                 alert("So'rovingiz muvaffaqiyatli yuborildi!");
-                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-            })
-            .catch(error => {
-                console.log('Lokal rejim:', error);
-                alert("Ma'lumot qabul qilindi! (Lokal sinov rejimi)");
                 document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
             });
         }
 
-        // Fikr bildirish formasini yuborish
         function submitFeedback(e) {
             e.preventDefault();
-            var name = document.getElementById('fbName').value;
-            
-            alert("Rahmat, " + name + "! Fikr va taklifingiz muvaffaqiyatli qabul qilindi.");
+            alert("Rahmat! Fikringiz qabul qilindi.");
             document.getElementById('feedbackModal').style.display = 'none';
-            document.getElementById('fbName').value = '';
-            document.getElementById('fbText').value = '';
         }
     </script>
 </body>
-</html>
+    </html>
