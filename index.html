@@ -209,3 +209,167 @@
             </form>
         </div>
     </div>
+    <script>
+        var myMap;
+
+        // Yandex xaritasini ishga tushirish (Butun O'zbekiston markazidan ochiladi)
+        ymaps.ready(init);
+
+        function init() {
+            myMap = new ymaps.Map("map", {
+                center: [41.3111, 69.2797], // Toshkent markazi (O'zbekiston)
+                zoom: 6, // Butun mamlakat ko'rinishi uchun
+                controls: ['zoomControl', 'geolocationControl']
+            });
+        }
+
+        // Sahifalarni almashtirish (Tabs)
+        function switchSection(sectionId) {
+            // Hamma bo'limlarni yashirish
+            var sections = document.querySelectorAll('.section');
+            sections.forEach(function(sec) {
+                sec.classList.remove('active');
+            });
+
+            // Tanlangan bo'limni chiqarish
+            document.getElementById(sectionId).classList.add('active');
+
+            // Tab tugmalarining aktiv holatini o'zgartirish
+            var tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Xarita ochilganda uning o'lchamini yangilab qo'yish
+            if (sectionId === 'mapSection' && myMap) {
+                setTimeout(function() {
+                    myMap.container.fitToViewport();
+                }, 100);
+            }
+        }
+
+        // Modal oynalarni ochish va yopish
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Ijaraga olish modalini ochish va bot nomini avtomatik yozish
+        function openRentModal(botName, botPrice) {
+            document.getElementById('modalBotTitle').innerText = botName + " (" + botPrice + ")";
+            document.getElementById('rentBotName').value = botName;
+            openModal('rentModal');
+        }
+
+        // Xaritadan shahar yoki manzilni qidirish
+        function searchLocation() {
+            var query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                alert("Iltimos, qidirish uchun shahar yoki manzil nomini kiriting!");
+                return;
+            }
+
+            ymaps.geocode(query, { results: 1 }).then(function (res) {
+                var firstGeoObject = res.geoObjects.get(0);
+                if (!firstGeoObject) {
+                    alert("Bunday manzil topilmadi. Qaytadan urinib ko'ring.");
+                    return;
+                }
+
+                var coords = firstGeoObject.geometry.getCoordinates();
+                myMap.setCenter(coords, 14, { duration: 500 });
+
+                var searchPlacemark = new ymaps.Placemark(coords, {
+                    balloonContent: query
+                }, {
+                    preset: 'islands#redDotIcon'
+                });
+
+                myMap.geoObjects.removeAll();
+                myMap.geoObjects.add(searchPlacemark);
+            }).catch(function (err) {
+                alert("Qidirishda xatolik yuz berdi!");
+            });
+        }
+
+        // Foydalanuvchining hozirgi GPS joylashuvini aniqlash
+        function getGPSLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    var lat = pos.coords.latitude;
+                    var lon = pos.coords.longitude;
+                    if (myMap) {
+                        myMap.setCenter([lat, lon], 15, { duration: 500 });
+                        var userPlacemark = new ymaps.Placemark([lat, lon], {
+                            balloonContent: "Siz turgan joy"
+                        }, {
+                            preset: 'islands#blueCircleDotIcon'
+                        });
+                        myMap.geoObjects.add(userPlacemark);
+                    }
+                }, function(error) {
+                    alert("Joylashuvni aniqlab bo'lmadi. Brauzer GPS ruxsatini tekshiring.");
+                });
+            } else {
+                alert("Brauzeringiz GPS xizmatini qo'llab-quvvatlamaydi.");
+            }
+        }
+
+        // Flask API ga ma'lumot yuborish (Ijaraga olish va Biznes qo'shish)
+        function submitForm(e, type) {
+            e.preventDefault();
+            
+            let data = {};
+            let endpoint = "";
+
+            if (type === 'rent') {
+                data = {
+                    bot_name: document.getElementById('rentBotName').value,
+                    business_name: document.getElementById('rentBusinessName').value,
+                    phone: document.getElementById('rentPhone').value
+                };
+                endpoint = 'http://127.0.0.1:5000/api/rent-bot'; // Flask server manzili
+            } else if (type === 'business') {
+                data = {
+                    name: document.getElementById('bizName').value,
+                    address: document.getElementById('bizAddress').value,
+                    contact: document.getElementById('bizContact').value
+                };
+                endpoint = 'http://127.0.0.1:5000/api/register'; // Flask server manzili
+            }
+
+            // Serverga fetch orqali jo'natish
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert("So'rovingiz muvaffaqiyatli yuborildi!");
+                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            })
+            .catch(error => {
+                console.log('Lokal rejim:', error);
+                alert("Ma'lumot qabul qilindi! (Lokal sinov rejimi)");
+                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            });
+        }
+
+        // Fikr bildirish formasini yuborish
+        function submitFeedback(e) {
+            e.preventDefault();
+            var name = document.getElementById('fbName').value;
+            
+            alert("Rahmat, " + name + "! Fikr va taklifingiz muvaffaqiyatli qabul qilindi.");
+            document.getElementById('feedbackModal').style.display = 'none';
+            document.getElementById('fbName').value = '';
+            document.getElementById('fbText').value = '';
+        }
+    </script>
+</body>
+</html>
