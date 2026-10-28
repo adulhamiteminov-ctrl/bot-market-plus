@@ -40,3 +40,233 @@ main{padding:20px 18px 100px}.section{display:none;animation:appear .2s ease}.se
   <div class="welcome"><h1 data-i18n="welcome">Biznesingizni avtomatlashtiring!</h1><p data-i18n="welcomeSub">Tayyor botlar, qulay xizmatlar va yangi imkoniyatlarni bir joydan toping.</p></div>
   <label class="search"><span>⌕</span><input id="globalSearch" data-placeholder="searchPlaceholder" placeholder="Bot, xizmat yoki shaharni qidiring..." autocomplete="off"><button onclick="runSearch()" data-i18n="search">Qidirish</button></label>
 </header>
+<main>
+  <section id="home" class="section active">
+    <div class="hero">
+      <div>
+        <h2 data-i18n="heroTitle">Raqamli xizmatlar — endi yanada oson!</h2>
+        <p data-i18n="heroText">Biznesingizga mos botni toping, foydali xizmatlarni kashf eting va ishlaringizni soddalashtiring.</p>
+        <button class="primary-btn" onclick="navigate('bots')" data-i18n="browseBots">Botlar katalogi →</button>
+      </div>
+      <div class="hero-art" aria-hidden="true">🚀</div>
+    </div>
+
+    <div class="section-heading">
+      <div>
+        <h2 data-i18n="categories">Asosiy bo‘limlar</h2>
+        <p data-i18n="categoriesSub">O‘zingizga kerakli yo‘nalishni tanlang</p>
+      </div>
+    </div>
+
+    <div class="category-grid">
+      <button class="category c-blue" onclick="navigate('bots')">
+        <span class="emoji">🤖</span>
+        <strong data-i18n="botMarket">Botlar bozori</strong>
+        <small data-i18n="botMarketSub">Tayyor botlar va ijara</small>
+      </button>
+      <button class="category c-green" onclick="navigate('mapPage')">
+        <span class="emoji">📍</span>
+        <strong data-i18n="businessMap">Bizneslar xaritasi</strong>
+        <small data-i18n="businessMapSub">Hamkorlar va xizmatlar</small>
+      </button>
+      <button class="category c-purple" onclick="navigate('learn')">
+        <span class="emoji">🎓</span>
+        <strong data-i18n="learning">Ta’lim markazi</strong>
+        <small data-i18n="learningSub">Darslar va testlar</small>
+      </button>
+      <button class="category c-orange" onclick="navigate('games')">
+        <span class="emoji">🎮</span>
+        <strong data-i18n="games">O‘yinlar</strong>
+        <small data-i18n="gamesSub">Bilim va mantiq</small>
+      </button>
+    </div>
+
+    <div class="section-heading">
+      <div>
+        <h2 data-i18n="featured">Tavsiya etilgan botlar</h2>
+        <p data-i18n="featuredSub">Biznesingiz uchun foydali vositalar</p>
+      </div>
+      <button class="text-btn" onclick="navigate('bots')" data-i18n="all">Barchasi →</button>
+    </div>
+    <div class="cards" id="featuredCards"></div>
+    <div class="footer-note">Bot Market Plus+ · Dastlabki MVP versiyasi</div>
+  </section>
+
+  <section id="bots" class="section">
+    <div class="page-title">
+      <h1 data-i18n="botMarket">Botlar bozori</h1>
+      <p data-i18n="botsIntro">Botlarni ko‘ring, demo bilan tanishing va ijara so‘rovi yuboring.</p>
+    </div>
+    <div class="filter-row" id="botFilters">
+      <button class="filter-chip active" data-filter="all" onclick="filterBots('all',this)">Barcha mavjud botlar</button>
+      <button class="filter-chip" data-filter="food" onclick="filterBots('food',this)">🍔 Fast-Food</button>
+    </div>
+    <div class="map-hint" style="margin:0 0 12px">
+      Hozircha katalogda faqat mavjud Fast-Food ijara botimiz bor.
+      Yangi botlar tayyor bo‘lganda shu yerga qo‘shiladi.
+    </div>
+    <div class="cards" id="botCards"></div>
+  </section>
+
+  <section id="fastfood" class="section">
+    <div class="page-title">
+      <h1>🍔 Fast-Food Mini App</h1>
+      <p>Demo menyu — savat va buyurtma oqimini sinab ko‘ring.</p>
+    </div>
+    <div class="food-hero">
+      <div>
+        <h2>Mazali taomlar,<br>tez yetkazib berish!</h2>
+        <p>Demo kafe · Menyu namunasi</p>
+      </div>
+    </div>
+    <div class="food-tabs">
+      <button class="active" onclick="foodCategory('all',this)">🍽️ Barchasi</button>
+      <button onclick="foodCategory('burger',this)">🍔 Burger</button>
+      <button onclick="foodCategory('pizza',this)">🍕 Pitsa</button>
+      <button onclick="foodCategory('drink',this)">🥤 Ichimlik</button>
+    </div>
+    <div class="food-list" id="foodList"></div>
+    <div class="cart-bar">
+      <span>🛒 Savat: <b id="cartCount">0</b> ta</span>
+      <span id="cartTotal">$0.00</span>
+      <button class="primary-btn" style="background:#fff;color:var(--blue);padding:9px 12px" onclick="checkout()">Buyurtma →</button>
+    </div>
+  </section>
+
+  <section id="mapPage" class="section">
+    <div class="page-title">
+      <h1 data-i18n="businessMap">Bizneslar xaritasi</h1>
+      <p data-i18n="mapIntro">Hamkor bizneslarni toping yoki o‘z biznesingizni joylashtirish uchun so‘rov yuboring.</p>
+    </div>
+    <div class="map-panel">
+      <div class="map-search">
+        <input id="mapSearch" placeholder="Shahar yoki manzilni kiriting..." aria-label="Manzil qidirish">
+        <button class="primary-btn" onclick="searchMap()">🔍 Qidirish</button>
+      </div>
+      <button class="primary-btn" style="width:100%;background:var(--green);margin-bottom:12px" onclick="useMyLocation()">📍 Mening joylashuvim</button>
+      <div id="mapCanvas"></div>
+      <p class="map-hint">Xarita uchun internet kerak. Manzil qidirish va GPS brauzer ruxsati hamda xarita xizmati ishlashiga bog‘liq.</p>
+    </div>
+    <div class="section-heading">
+      <div><h2>Hamkorlar</h2><p>Hozircha namuna ma’lumotlar</p></div>
+      <button class="text-btn" onclick="openModal('businessModal')">+ Biznes qo‘shish</button>
+    </div>
+    <div class="business-list" id="businessList"></div>
+  </section>
+
+  <section id="learn" class="section">
+    <div class="page-title">
+      <h1>🎓 Ta’lim markazi</h1>
+      <p>Keyingi bosqichda darslar, testlar va shaxsiy o‘rganish rejalari shu yerga qo‘shiladi.</p>
+    </div>
+    <div class="cards" id="learnCards"></div>
+  </section>
+
+  <section id="games" class="section">
+    <div class="page-title">
+      <h1>🎮 Bilim va mantiq o‘yinlari</h1>
+      <p>Oddiy demo o‘yinlar — keyinchalik darajalar va natijalar qo‘shiladi.</p>
+    </div>
+    <div class="info-card" style="padding:20px;margin-bottom:14px">
+      <div style="font-size:38px">🧠</div>
+      <h2 style="font-size:18px;margin:8px 0">Tezkor mantiq savoli</h2>
+      <p style="font-size:13px;color:var(--muted)">Ketma-ketlikni davom ettiring: 2, 4, 8, 16, ...</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="soft-btn" onclick="answerGame('20')">20</button>
+        <button class="soft-btn" onclick="answerGame('24')">24</button>
+        <button class="soft-btn" onclick="answerGame('32')">32</button>
+      </div>
+      <p id="gameAnswer" aria-live="polite"></p>
+    </div>
+    <div class="info-card" style="padding:20px">
+      <div style="font-size:35px">📚</div>
+      <h3 style="margin:8px 0">Kitobxonlik sinovi</h3>
+      <p style="font-size:13px;color:var(--muted)">Kelajakda kitob o‘qish, savol-javob va bilimni mustahkamlash tizimi shu bo‘limga qo‘shiladi.</p>
+    </div>
+  </section>
+
+  <section id="profile" class="section">
+    <div class="page-title">
+      <h1 data-i18n="profile">Profil</h1>
+      <p>So‘rovlar va saqlangan ma’lumotlar shu yerda ko‘rinadi.</p>
+    </div>
+    <div class="profile-row">
+      <div class="avatar">👤</div>
+      <div><strong>Mehmon foydalanuvchi</strong><p>Hozircha akkauntga kirilmagan</p></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="savedCount">0</strong><span>Saqlangan botlar</span></div>
+      <div class="stat"><strong id="rentalCount">0</strong><span>Ijara so‘rovlari</span></div>
+      <div class="stat"><strong id="orderCount">0</strong><span>Demo buyurtmalar</span></div>
+    </div>
+    <div class="menu-list">
+      <button class="menu-line" onclick="showSaved()">❤️ Saqlangan botlar <span>›</span></button>
+      <button class="menu-line" onclick="showRentals()">🤖 Ijara so‘rovlari <span>›</span></button>
+      <button class="menu-line" onclick="showOrders()">🛒 Demo buyurtmalar <span>›</span></button>
+      <button class="menu-line" onclick="openModal('aboutModal')">ℹ️ Platforma haqida <span>›</span></button>
+    </div>
+    <div id="profileDetails" style="margin-top:13px"></div>
+  </section>
+</main>
+
+<nav class="bottom-nav" aria-label="Asosiy navigatsiya">
+  <button class="nav-item active" data-page="home" onclick="navigate('home')"><span class="nav-emoji">⌂</span><span data-i18n="home">Bosh sahifa</span></button>
+  <button class="nav-item" data-page="bots" onclick="navigate('bots')"><span class="nav-emoji">🤖</span><span data-i18n="bots">Botlar</span></button>
+  <button class="nav-item" data-page="mapPage" onclick="navigate('mapPage')"><span class="nav-emoji">📍</span><span data-i18n="mapNav">Xarita</span></button>
+  <button class="nav-item" data-page="learn" onclick="navigate('learn')"><span class="nav-emoji">🎓</span><span data-i18n="learningShort">Ta’lim</span></button>
+  <button class="nav-item" data-page="profile" onclick="navigate('profile')"><span class="nav-emoji">👤</span><span data-i18n="profile">Profil</span></button>
+</nav>
+</div>
+
+<div class="modal-backdrop" id="rentModal">
+  <div class="modal">
+    <div class="modal-head"><h2>🤖 Botni ijaraga olish</h2><button class="close" onclick="closeModal('rentModal')">×</button></div>
+    <div class="note">Bu prototipda so‘rov faqat shu qurilmada saqlanadi. Haqiqiy ijara, to‘lov va operatorga yuborish uchun server ulanishi keyin qo‘shiladi.</div>
+    <form id="rentForm">
+      <input type="hidden" id="rentBotId">
+      <div class="field"><label>Tanlangan bot</label><input id="rentBotName" readonly></div>
+      <div class="field"><label>Biznes nomi</label><input id="rentBusiness" required placeholder="Masalan, Eminjon Fast Food"></div>
+      <div class="field"><label>Telefon raqam</label><input id="rentPhone" required type="tel" placeholder="+998 90 123 45 67"></div>
+      <div class="field"><label>Izoh (ixtiyoriy)</label><textarea id="rentNote" rows="2" placeholder="Sizga qanday imkoniyatlar kerak?"></textarea></div>
+      <button class="primary-btn" style="width:100%" type="submit">So‘rovni saqlash</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="checkoutModal">
+  <div class="modal">
+    <div class="modal-head"><h2>🛒 Buyurtmani rasmiylashtirish</h2><button class="close" type="button" onclick="closeModal('checkoutModal')">×</button></div>
+    <div class="note">Bu demo buyurtma hozircha faqat shu qurilmada saqlanadi. Kafega yuborish uchun server va Telegram bot ulanishi keyingi bosqichda qo‘shiladi.</div>
+    <form id="checkoutForm">
+      <div class="field"><label>Ismingiz</label><input id="orderName" required placeholder="Ismingiz"></div>
+      <div class="field"><label>Telefon raqam</label><input id="orderPhone" type="tel" required placeholder="+998 90 123 45 67"></div>
+      <div class="field"><label>Yetkazib berish manzili</label><textarea id="orderAddress" rows="2" required placeholder="Shahar, tuman, ko‘cha, uy"></textarea></div>
+      <div class="field"><label>Buyurtma summasi</label><input id="orderSummary" readonly></div>
+      <button class="primary-btn" style="width:100%" type="submit">Demo buyurtmani saqlash</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="businessModal">
+  <div class="modal">
+    <div class="modal-head"><h2>📍 Biznes qo‘shish</h2><button class="close" onclick="closeModal('businessModal')">×</button></div>
+    <div class="note">Bu ma’lumot hozircha qurilmangizda demo so‘rov sifatida saqlanadi. Hammaga ko‘rinadigan bizneslar ro‘yxati uchun server kerak.</div>
+    <form id="businessForm">
+      <div class="field"><label>Biznes nomi</label><input id="bizName" required placeholder="Masalan, Milliy Taomlar"></div>
+      <div class="field"><label>Yo‘nalish</label><select id="bizCategory"><option>Restoran / Kafe</option><option>Do‘kon</option><option>Mehmonxona</option><option>Sartaroshxona</option><option>Avtoservis</option><option>Boshqa</option></select></div>
+      <div class="field"><label>Manzil</label><input id="bizAddress" required placeholder="Shahar, tuman, ko‘cha"></div>
+      <div class="field"><label>Aloqa raqami</label><input id="bizContact" required type="tel" placeholder="+998 ..."></div>
+      <button class="primary-btn" style="width:100%" type="submit">So‘rovni saqlash</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="aboutModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Bot Market Plus+</h2><button class="close" onclick="closeModal('aboutModal')">×</button></div>
+    <p>Bot Market Plus+ — botlar, mini-ilovalar, biznes xizmatlari, ta’lim va o‘yinlarni bir joyga jamlash uchun ishlab chiqilayotgan platforma.</p>
+    <p><b>Hozirgi versiya:</b> dizayn va ayrim demo funksiyalar. Haqiqiy foydalanuvchilar o‘rtasida ma’lumot almashish, bot ijarasi, to‘lovlar va buyurtmalarni boshqarish uchun backend hamda ma’lumotlar bazasi alohida ulanadi.</p>
+    <button class="primary-btn" style="width:100%" onclick="closeModal('aboutModal')">Tushunarli</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
