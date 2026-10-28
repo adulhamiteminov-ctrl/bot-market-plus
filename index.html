@@ -270,3 +270,559 @@ main{padding:20px 18px 100px}.section{display:none;animation:appear .2s ease}.se
   </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const EXISTING_BOT = {
+  id: 'fastfood',
+  name: 'Fast-Food & Delivery Bot',
+  category: 'food',
+  icon: '🍔',
+  price: '$3–$4 / oy',
+  desc: 'Mavjud Telegram botimiz: fast-food buyurtmalari uchun.',
+  tone: 'orange',
+  tag: 'Mavjud bot',
+  demo: 'https://t.me/fast_food_menejer_bot'
+};
+
+const FOOD_ITEMS = [
+  {id:1,name:'Klassik burger',category:'burger',price:4.5,icon:'🍔'},
+  {id:2,name:'Pishloqli burger',category:'burger',price:5.5,icon:'🍔'},
+  {id:3,name:'Pepperoni pitsa',category:'pizza',price:8,icon:'🍕'},
+  {id:4,name:'Margarita pitsa',category:'pizza',price:7,icon:'🍕'},
+  {id:5,name:'Cola',category:'drink',price:1.5,icon:'🥤'},
+  {id:6,name:'Sharbat',category:'drink',price:2,icon:'🧃'}
+];
+
+const STORAGE = {
+  saved: 'bmp_saved_v1',
+  rentals: 'bmp_rentals_v1',
+  orders: 'bmp_orders_v1',
+  businesses: 'bmp_businesses_v1'
+};
+
+let cart = [];
+let activeFoodCategory = 'all';
+let currentBotFilter = 'all';
+let mapObject = null;
+let toastTimer = null;
+
+function readStore(key) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function writeStore(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    showToast('Ma’lumotni saqlab bo‘lmadi.');
+    return false;
+  }
+}
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, function(char) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char];
+  });
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+}
+
+function navigate(page) {
+  const target = document.getElementById(page);
+  if (!target) return;
+
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.remove('active');
+  });
+  target.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(button => {
+    button.classList.toggle('active', button.dataset.page === page);
+  });
+
+  if (page === 'mapPage') {
+    setTimeout(initMap, 250);
+  }
+  if (page === 'profile') {
+    updateProfileStats();
+  }
+
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function botCard(bot) {
+  const saved = readStore(STORAGE.saved).includes(bot.id);
+
+  return `
+    <article class="bot-card">
+      <div class="bot-visual ${escapeHTML(bot.tone)}">
+        <span class="badge">${escapeHTML(bot.tag)}</span>
+        <span>${bot.icon}</span>
+      </div>
+      <div class="bot-body">
+        <h3 class="bot-title">${escapeHTML(bot.name)}</h3>
+        <p class="bot-desc">${escapeHTML(bot.desc)}</p>
+        <div class="meta">
+          <span class="price">${escapeHTML(bot.price)}</span>
+          <span class="rating">Mavjud bot</span>
+        </div>
+        <div class="card-actions">
+          <button class="soft-btn" onclick="openExistingBot()">
+            Botni ochish ↗
+          </button>
+          <button class="primary-btn" onclick="openRentModal()">
+            Ijaraga olish
+          </button>
+        </div>
+        <button class="text-btn" onclick="toggleSaved('${bot.id}')">
+          ${saved ? '❤️ Saqlangan' : '♡ Saqlab qo‘yish'}
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+function renderBots() {
+  const html = currentBotFilter === 'all' || currentBotFilter === 'food'
+    ? botCard(EXISTING_BOT)
+    : '<div class="empty">Bu bo‘limda hozircha bot yo‘q.</div>';
+
+  const botCards = document.getElementById('botCards');
+  const featuredCards = document.getElementById('featuredCards');
+
+  if (botCards) botCards.innerHTML = html;
+  if (featuredCards) featuredCards.innerHTML = botCard(EXISTING_BOT);
+}
+
+function filterBots(filter, button) {
+  currentBotFilter = filter;
+
+  document.querySelectorAll('#botFilters .filter-chip').forEach(chip => {
+    chip.classList.remove('active');
+  });
+
+  if (button) button.classList.add('active');
+  renderBots();
+}
+
+function openExistingBot() {
+  window.open(EXISTING_BOT.demo, '_blank', 'noopener,noreferrer');
+}
+
+function openRentModal() {
+  document.getElementById('rentBotId').value = EXISTING_BOT.id;
+  document.getElementById('rentBotName').value = EXISTING_BOT.name;
+  openModal('rentModal');
+}
+
+function toggleSaved(botId) {
+  let saved = readStore(STORAGE.saved);
+
+  if (saved.includes(botId)) {
+    saved = saved.filter(id => id !== botId);
+    showToast('Saqlangan botlar ro‘yxatidan olib tashlandi.');
+  } else {
+    saved.push(botId);
+    showToast('Bot saqlanganlar ro‘yxatiga qo‘shildi.');
+  }
+
+  writeStore(STORAGE.saved, saved);
+  renderBots();
+  updateProfileStats();
+}
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.add('show');
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.remove('show');
+}
+
+document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+  backdrop.addEventListener('click', event => {
+    if (event.target === backdrop) {
+      backdrop.classList.remove('show');
+    }
+  });
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    document.querySelectorAll('.modal-backdrop').forEach(modal => {
+      modal.classList.remove('show');
+    });
+  }
+});
+
+document.getElementById('rentForm').addEventListener('submit', event => {
+  event.preventDefault();
+
+  const rentals = readStore(STORAGE.rentals);
+  rentals.push({
+    bot: document.getElementById('rentBotName').value,
+    business: document.getElementById('rentBusiness').value.trim(),
+    phone: document.getElementById('rentPhone').value.trim(),
+    note: document.getElementById('rentNote').value.trim(),
+    date: new Date().toISOString()
+  });
+
+  if (writeStore(STORAGE.rentals, rentals)) {
+    event.target.reset();
+    closeModal('rentModal');
+    updateProfileStats();
+    showToast('Demo so‘rov telefoningizda saqlandi.');
+  }
+});
+
+function renderFood() {
+  const container = document.getElementById('foodList');
+  const items = activeFoodCategory === 'all'
+    ? FOOD_ITEMS
+    : FOOD_ITEMS.filter(item => item.category === activeFoodCategory);
+
+  container.innerHTML = items.map(item => `
+    <article class="food-item">
+      <div class="food-img">${item.icon}</div>
+      <div class="food-info">
+        <strong>${escapeHTML(item.name)}</strong>
+        <p>Demo menyu</p>
+        <div class="food-price">$${item.price.toFixed(2)}</div>
+      </div>
+      <button class="add-food" aria-label="Savatga qo‘shish"
+        onclick="addToCart(${item.id})">+</button>
+    </article>
+  `).join('');
+}
+
+function foodCategory(category, button) {
+  activeFoodCategory = category;
+
+  document.querySelectorAll('.food-tabs button').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  button.classList.add('active');
+  renderFood();
+}
+
+function addToCart(id) {
+  const item = FOOD_ITEMS.find(food => food.id === id);
+  if (!item) return;
+
+  cart.push(item);
+  updateCart();
+  showToast(item.name + ' savatga qo‘shildi.');
+}
+
+function updateCart() {
+  document.getElementById('cartCount').textContent = cart.length;
+
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  document.getElementById('cartTotal').textContent = '$' + total.toFixed(2);
+}
+
+function checkout() {
+  if (!cart.length) {
+    showToast('Avval menyudan taom tanlang.');
+    return;
+  }
+
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const summary = cart.map(item => item.name).join(', ');
+
+  document.getElementById('orderSummary').value =
+    summary + ' — $' + total.toFixed(2);
+
+  openModal('checkoutModal');
+}
+
+document.getElementById('checkoutForm').addEventListener('submit', event => {
+  event.preventDefault();
+
+  const orders = readStore(STORAGE.orders);
+  orders.push({
+    name: document.getElementById('orderName').value.trim(),
+    phone: document.getElementById('orderPhone').value.trim(),
+    address: document.getElementById('orderAddress').value.trim(),
+    items: cart.map(item => item.name),
+    total: cart.reduce((sum, item) => sum + item.price, 0),
+    date: new Date().toISOString()
+  });
+
+  if (writeStore(STORAGE.orders, orders)) {
+    event.target.reset();
+    cart = [];
+    updateCart();
+    closeModal('checkoutModal');
+    updateProfileStats();
+    showToast('Demo buyurtma telefoningizda saqlandi.');
+  }
+});
+
+document.getElementById('businessForm').addEventListener('submit', event => {
+  event.preventDefault();
+
+  const businesses = readStore(STORAGE.businesses);
+  businesses.push({
+    name: document.getElementById('bizName').value.trim(),
+    category: document.getElementById('bizCategory').value,
+    address: document.getElementById('bizAddress').value.trim(),
+    contact: document.getElementById('bizContact').value.trim(),
+    date: new Date().toISOString()
+  });
+
+  if (writeStore(STORAGE.businesses, businesses)) {
+    event.target.reset();
+    closeModal('businessModal');
+    renderBusinesses();
+    showToast('Demo biznes so‘rovi saqlandi.');
+  }
+});
+
+function renderBusinesses() {
+  const container = document.getElementById('businessList');
+  const businesses = readStore(STORAGE.businesses);
+
+  if (!businesses.length) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="emoji">🏪</div>
+        Hozircha hamkor bizneslar ro‘yxati bo‘sh.
+        O‘z biznesingizni qo‘shish uchun so‘rov yuborishingiz mumkin.
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = businesses.map(business => `
+    <div class="business-row">
+      <div class="business-icon">🏪</div>
+      <div>
+        <strong>${escapeHTML(business.name)}</strong>
+        <p>${escapeHTML(business.category)} · ${escapeHTML(business.address)}</p>
+        <p>${escapeHTML(business.contact)}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateProfileStats() {
+  document.getElementById('savedCount').textContent =
+    readStore(STORAGE.saved).length;
+  document.getElementById('rentalCount').textContent =
+    readStore(STORAGE.rentals).length;
+  document.getElementById('orderCount').textContent =
+    readStore(STORAGE.orders).length;
+}
+
+function showSaved() {
+  const saved = readStore(STORAGE.saved);
+  document.getElementById('profileDetails').innerHTML = saved.includes('fastfood')
+    ? `<div class="info-card" style="padding:15px">${escapeHTML(EXISTING_BOT.name)}
+       <p><button class="secondary-btn" onclick="openExistingBot()">Botni ochish ↗</button></p></div>`
+    : '<div class="empty">Hozircha saqlangan bot yo‘q.</div>';
+}
+
+function showRentals() {
+  const rentals = readStore(STORAGE.rentals);
+
+  document.getElementById('profileDetails').innerHTML = rentals.length
+    ? rentals.map(item => `
+      <div class="info-card" style="padding:14px;margin-bottom:10px">
+        <strong>${escapeHTML(item.bot)}</strong>
+        <p>${escapeHTML(item.business)} · ${escapeHTML(item.phone)}</p>
+        <small>${escapeHTML(item.date.slice(0,10))}</small>
+      </div>`).join('')
+    : '<div class="empty">Hozircha ijara so‘rovi yo‘q.</div>';
+}
+
+function showOrders() {
+  const orders = readStore(STORAGE.orders);
+
+  document.getElementById('profileDetails').innerHTML = orders.length
+    ? orders.map(order => `
+      <div class="info-card" style="padding:14px;margin-bottom:10px">
+        <strong>${escapeHTML(order.name)}</strong>
+        <p>${escapeHTML(order.items.join(', '))}</p>
+        <p>Jami: $${Number(order.total).toFixed(2)}</p>
+        <small>${escapeHTML(order.date.slice(0,10))}</small>
+      </div>`).join('')
+    : '<div class="empty">Hozircha demo buyurtma yo‘q.</div>';
+}
+
+function runSearch() {
+  const query = document.getElementById('globalSearch').value.trim().toLowerCase();
+
+  if (!query) {
+    showToast('Qidirish uchun so‘z kiriting.');
+    return;
+  }
+
+  if (
+    EXISTING_BOT.name.toLowerCase().includes(query) ||
+    'fast food burger ovqat yetkazib berish ijara bot'.includes(query)
+  ) {
+    navigate('bots');
+    showToast('Mavjud Fast-Food botimiz topildi.');
+    return;
+  }
+
+  if ('xarita biznes hamkor manzil'.includes(query)) {
+    navigate('mapPage');
+    return;
+  }
+
+  showToast('Mos natija topilmadi.');
+}
+
+document.getElementById('globalSearch').addEventListener('keydown', event => {
+  if (event.key === 'Enter') runSearch();
+});
+
+function answerGame(answer) {
+  const result = document.getElementById('gameAnswer');
+
+  if (answer === '32') {
+    result.textContent = 'To‘g‘ri! Har safar son 2 ga ko‘paymoqda. 🎉';
+    result.style.color = 'var(--green)';
+  } else {
+    result.textContent = 'Yana urinib ko‘ring. Sonlar qanday o‘sayotganini kuzating.';
+    result.style.color = 'var(--muted)';
+  }
+}
+
+function initMap() {
+  const container = document.getElementById('mapCanvas');
+  if (!container || mapObject || !window.L) return;
+
+  container.id = 'map';
+  mapObject = L.map('map').setView([41.2995, 69.2401], 11);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(mapObject);
+
+  L.marker([41.2995, 69.2401]).addTo(mapObject)
+    .bindPopup('Toshkent — xarita namunasi');
+
+  setTimeout(() => mapObject.invalidateSize(), 200);
+}
+
+function searchMap() {
+  const query = document.getElementById('mapSearch').value.trim();
+
+  if (!query) {
+    showToast('Manzil yoki shahar nomini kiriting.');
+    return;
+  }
+
+  if (!window.L) {
+    showToast('Xarita kutubxonasi yuklanmadi. Internetni tekshiring.');
+    return;
+  }
+
+  fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query))
+    .then(response => response.json())
+    .then(results => {
+      if (!results.length) {
+        showToast('Manzil topilmadi.');
+        return;
+      }
+
+      const place = results[0];
+      navigate('mapPage');
+      initMap();
+
+      if (mapObject) {
+        mapObject.setView([Number(place.lat), Number(place.lon)], 14);
+        L.marker([Number(place.lat), Number(place.lon)]).addTo(mapObject)
+          .bindPopup(escapeHTML(place.display_name)).openPopup();
+      }
+    })
+    .catch(() => showToast('Manzil qidirishda xatolik yuz berdi.'));
+}
+
+function useMyLocation() {
+  if (!navigator.geolocation) {
+    showToast('Telefoningiz GPS funksiyasi mavjud emas.');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(position => {
+    navigate('mapPage');
+    initMap();
+
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    if (mapObject) {
+      mapObject.setView([lat, lon], 15);
+      L.marker([lat, lon]).addTo(mapObject)
+        .bindPopup('Sizning joylashuvingiz').openPopup();
+    }
+  }, () => {
+    showToast('Joylashuvga ruxsat berilmadi yoki GPS ishlamadi.');
+  }, {enableHighAccuracy: true, timeout: 10000});
+}
+
+function renderLearning() {
+  const container = document.getElementById('learnCards');
+  container.innerHTML = `
+    <article class="info-card" style="padding:18px">
+      <div style="font-size:38px">📘</div>
+      <h3>Kitoblar va bilim</h3>
+      <p style="font-size:13px;color:var(--muted)">Bu bo‘lim keyingi ishlab chiqish bosqichida to‘ldiriladi.</p>
+    </article>
+    <article class="info-card" style="padding:18px">
+      <div style="font-size:38px">📝</div>
+      <h3>Testlar</h3>
+      <p style="font-size:13px;color:var(--muted)">Hozircha test tizimi demo sifatida rejalashtirilgan.</p>
+    </article>`;
+}
+
+document.getElementById('langSelect').addEventListener('change', event => {
+  if (event.target.value === 'ru') {
+    showToast('Русский язык будет добавлен в следующей версии.');
+    event.target.value = 'uz';
+  }
+});
+
+function initializeApp() {
+  renderBots();
+  renderFood();
+  renderBusinesses();
+  renderLearning();
+  updateCart();
+  updateProfileStats();
+}
+
+initializeApp();
+</script>
+
+<!-- Xarita kutubxonasi -->
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+</body>
+  </html>
