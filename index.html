@@ -649,18 +649,59 @@ document.getElementById('businessForm').addEventListener('submit', async event =
   }
 });
 
-function renderBusinesses() {
-  const container = document.getElementById('businessList');
-  const businesses = readStore(STORAGE.businesses);
+async function renderBusinesses() {
+const container = document.getElementById('businessList');
 
-  if (!businesses.length) {
-    container.innerHTML = `
-      <div class="empty">
-        <div class="emoji">🏪</div>
-        Hozircha hamkor bizneslar ro‘yxati bo‘sh.
-        O‘z biznesingizni qo‘shish uchun so‘rov yuborishingiz mumkin.
-      </div>`;
-    return;
+container.innerHTML = " <div class="empty"> <div class="emoji">⏳</div> Bizneslar yuklanmoqda... </div>";
+
+try {
+const response = await fetch(
+'https://motiv199594.pythonanywhere.com/api/businesses'
+);
+
+const result = await response.json();
+
+if (!response.ok || result.status !== 'ok') {
+  throw new Error('Bizneslar ro‘yxatini olishda xatolik.');
+}
+
+const businesses = result.businesses || [];
+
+if (!businesses.length) {
+  container.innerHTML = `
+    <div class="empty">
+      <div class="emoji">🏪</div>
+      Hozircha hamkor bizneslar ro‘yxati bo‘sh.
+      O‘z biznesingizni qo‘shish uchun so‘rov yuborishingiz mumkin.
+    </div>`;
+  return;
+}
+
+container.innerHTML = businesses.map(business => `
+  <div class="business-row">
+    <div class="business-icon">🏪</div>
+    <div>
+      <strong>${escapeHTML(business.name || '')}</strong>
+      <p>${escapeHTML(business.category || 'Boshqa')} ·
+         ${escapeHTML(business.address || 'Manzil kiritilmagan')}</p>
+      <p>${escapeHTML(business.phone || '')}</p>
+    </div>
+  </div>
+`).join('');
+
+} catch (error) {
+console.error('Bizneslarni yuklash xatosi:', error);
+
+container.innerHTML = `
+  <div class="empty">
+    <div class="emoji">⚠️</div>
+    Bizneslarni yuklab bo‘lmadi.
+    Internet yoki server ulanishini tekshiring.
+  </div>`;
+
+showToast('Bizneslar ro‘yxatini yuklashda xatolik yuz berdi.');
+
+}
   }
 
   container.innerHTML = businesses.map(business => `
