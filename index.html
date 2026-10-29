@@ -652,11 +652,8 @@ document.getElementById('businessForm').addEventListener('submit', async event =
 async function renderBusinesses() {
 const container = document.getElementById('businessList');
 
-container.innerHTML = `
-  <div class="empty">
-    <div class="emoji">⏳</div>
-    Bizneslar yuklanmoqda...
-  </div>`;
+container.innerHTML = " <div class="empty"> <div class="emoji">⏳</div> Bizneslar yuklanmoqda... </div>";
+
 try {
 const response = await fetch(
 'https://motiv199594.pythonanywhere.com/api/businesses'
@@ -706,19 +703,6 @@ showToast('Bizneslar ro‘yxatini yuklashda xatolik yuz berdi.');
 
 }
   }
-
-  container.innerHTML = businesses.map(business => `
-    <div class="business-row">
-      <div class="business-icon">🏪</div>
-      <div>
-        <strong>${escapeHTML(business.name)}</strong>
-        <p>${escapeHTML(business.category)} · ${escapeHTML(business.address)}</p>
-        <p>${escapeHTML(business.contact)}</p>
-      </div>
-    </div>
-  `).join('');
-}
-
 function updateProfileStats() {
   document.getElementById('savedCount').textContent =
     readStore(STORAGE.saved).length;
