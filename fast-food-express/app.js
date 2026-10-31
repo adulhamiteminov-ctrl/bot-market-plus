@@ -1,5 +1,5 @@
 // FAST FOOD EXPRESS
-// 3-qism: Ilovaning ishlash kodi
+// Ishlaydigan frontend versiyasi
 
 const products = [
     {
@@ -68,144 +68,463 @@ const products = [
     }
 ];
 
-let cart = [];
+let cart = loadData("ffe_cart", []);
+let favorites = loadData("ffe_favorites", []);
+let orders = loadData("ffe_orders", []);
+let profile = loadData("ffe_profile", {
+    name: "Mehmon",
+    phone: ""
+});
+
 let currentCategory = "all";
+let toastTimer;
 
-const productsList = document.getElementById("productsList");
-const searchInput = document.getElementById("searchInput");
+function loadData(key, fallback) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+        return fallback;
+    }
+}
 
-// Narxni so‘m ko‘rinishida chiqarish
+function saveData() {
+    localStorage.setItem("ffe_cart", JSON.stringify(cart));
+    localStorage.setItem("ffe_favorites", JSON.stringify(favorites));
+    localStorage.setItem("ffe_orders", JSON.stringify(orders));
+    localStorage.setItem("ffe_profile", JSON.stringify(profile));
+}
+
 function formatPrice(price) {
     return new Intl.NumberFormat("uz-UZ").format(price) + " so‘m";
 }
 
-// Mahsulotlarni chiqarish
-function showProducts() {
-    if (!productsList) {
-        console.error("productsList elementi topilmadi.");
-        return;
-    }
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
 
-    const searchText = searchInput
-        ? searchInput.value.toLowerCase().trim()
-        : "";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2200);
+}
 
-    const filteredProducts = products.filter(product => {
-        const matchesCategory =
-            currentCategory === "all" ||
-            product.category === currentCategory;
+function cartTotal() {
+    return cart.reduce((sum, item) => {
+        return sum + item.price * item.quantity;
+    }, 0);
+}
 
-        const matchesSearch =
-            product.name.toLowerCase().includes(searchText) ||
-            product.description.toLowerCase().includes(searchText);
+function updateCartCount() {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById("cartCount").textContent = count;
+}
 
-        return matchesCategory && matchesSearch;
-    });
+function productCard(product) {
+    const isFavorite = favorites.includes(product.id);
 
-    productsList.innerHTML = "";
-
-    if (filteredProducts.length === 0) {
-        productsList.innerHTML =
-            '<div class="empty-message">Mahsulot topilmadi.</div>';
-        return;
-    }
-
-    filteredProducts.forEach(product => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-
-        card.innerHTML = `
-            <img src="${product.image}"
-                 alt="${product.name}"
-                 loading="lazy">
+    return `
+        <article class="product-card">
+            <img src="${product.image}" alt="${product.name}" loading="lazy">
 
             <div class="product-info">
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
 
                 <div class="product-bottom">
-                    <span class="product-price">
-                        ${formatPrice(product.price)}
-                    </span>
-
-                    <button class="add-cart-btn"
-                            data-product-id="${product.id}">
+                    <span class="product-price">${formatPrice(product.price)}</span>
+                    <button class="favorite-btn ${isFavorite ? "selected" : ""}"
+                            data-favorite="${product.id}">
+                        ${isFavorite ? "♥" : "♡"}
+                    </button>
+                    <button class="add-cart-btn" data-add="${product.id}">
                         + Savat
                     </button>
                 </div>
             </div>
-        `;
-
-        productsList.appendChild(card);
-    });
+        </article>
+    `;
 }
 
-// Savatga mahsulot qo‘shish
-function addToCart(productId) {
-    const product = products.find(item => item.id === productId);
+function showProducts() {
+    const list = document.getElementById("productsList");
+    const search = document.getElementById("searchInput").value
+        .toLowerCase().trim();
 
+    const filtered = products.filter(product => {
+        const categoryMatch =
+            currentCategory === "all" ||
+            product.category === currentCategory;
+
+        const searchMatch =
+            product.name.toLowerCase().includes(search) ||
+            product.description.toLowerCase().includes(search);
+
+        return categoryMatch && searchMatch;
+    });
+
+    list.innerHTML = filtered.length
+        ? filtered.map(productCard).join("")
+        : '<p class="empty-message">Mahsulot topilmadi.</p>';
+}
+
+function addToCart(id) {
+    const product = products.find(item => item.id === id);
     if (!product) return;
 
-    const existingItem = cart.find(item => item.id === productId);
+    const existing = cart.find(item => item.id === id);
 
-    if (existingItem) {
-        existingItem.quantity++;
+    if (existing) {
+        existing.quantity++;
     } else {
-        cart.push({
-            ...product,
-            quantity: 1
-        });
+        cart.push({ ...product, quantity: 1 });
     }
 
+    saveData();
     updateCartCount();
-
-    alert(product.name + " savatga qo‘shildi!");
+    showToast(product.name + " savatga qo‘shildi!");
 }
 
-// Savatdagi mahsulotlar soni
-function updateCartCount() {
-    const count = cart.reduce(
-        (total, item) => total + item.quantity,
-        0
+function changeQuantity(id, amount) {
+    const item = cart.find(product => product.id === id);
+    if (!item) return;
+
+    item.quantity += amount;
+
+    if (item.quantity <= 0) {
+        cart = cart.filter(product => product.id !== id);
+    }
+
+    saveData();
+    showCart();
+    updateCartCount();
+}
+
+function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    saveData();
+    showCart();
+    updateCartCount();
+    showToast("Mahsulot savatdan olib tashlandi.");
+}
+
+function showCart() {
+    const container = document.getElementById("cartItems");
+    const summary = document.getElementById("cartSummary");
+    const checkoutButton = document.getElementById("checkoutBtn");
+
+    if (cart.length === 0) {
+        container.innerHTML =
+            '<p class="empty-message">Savatingiz hozircha bo‘sh.</p>';
+        summary.innerHTML = "";
+        checkoutButton.disabled = true;
+        checkoutButton.style.opacity = ".5";
+        return;
+    }
+
+    checkoutButton.disabled = false;
+    checkoutButton.style.opacity = "1";
+
+    container.innerHTML = cart.map(item => `
+        <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+                <h3>${item.name}</h3>
+                <p>${formatPrice(item.price * item.quantity)}</p>
+
+                <div class="quantity-controls">
+                    <button data-minus="${item.id}">−</button>
+                    <span>${item.quantity}</span>
+                    <button data-plus="${item.id}">+</button>
+                </div>
+            </div>
+            <button class="remove-btn" data-remove="${item.id}">
+                🗑
+            </button>
+        </div>
+    `).join("");
+
+    summary.innerHTML = `
+        <div class="total-row">
+            <span>Jami:</span>
+            <span>${formatPrice(cartTotal())}</span>
+        </div>
+    `;
+}
+
+function showFavorites() {
+    const container = document.getElementById("favoritesList");
+    const favoriteProducts = products.filter(item =>
+        favorites.includes(item.id)
     );
 
-    const cartButton = document.getElementById("cartCount");
-
-    if (cartButton) {
-        cartButton.textContent = count;
-    }
+    container.innerHTML = favoriteProducts.length
+        ? favoriteProducts.map(productCard).join("")
+        : '<p class="empty-message">Sevimlilar ro‘yxati bo‘sh.</p>';
 }
 
-// Kategoriyalar
+function showOrders() {
+    const container = document.getElementById("ordersList");
+
+    if (orders.length === 0) {
+        container.innerHTML =
+            '<p class="empty-message">Hozircha buyurtmalaringiz yo‘q.</p>';
+        return;
+    }
+
+    container.innerHTML = [...orders].reverse().map(order => `
+        <div class="order-card">
+            <h3>Buyurtma #${order.id}</h3>
+            <p>Sana: ${order.date}</p>
+            <p>Mahsulotlar: ${order.items.map(item =>
+                item.name + " × " + item.quantity
+            ).join(", ")}</p>
+            <p>Olish usuli: ${order.deliveryType === "pickup"
+                ? "O‘zim olib ketaman" : "Yetkazib berish"}</p>
+            <p>To‘lov: ${order.paymentType === "cash"
+                ? "Naqd pul" : "Karta (demo)"}</p>
+            <p>Jami: ${formatPrice(order.total)}</p>
+            <p class="order-status">Holati: ${order.status}</p>
+        </div>
+    `).join("");
+}
+
+function showPage(page) {
+    const home = document.getElementById("homePage");
+    const panels = [
+        "cartPage",
+        "checkoutPage",
+        "ordersPage",
+        "favoritesPage",
+        "profilePage"
+    ];
+
+    home.hidden = page !== "home";
+
+    panels.forEach(id => {
+        document.getElementById(id).hidden = id !== page + "Page";
+    });
+
+    document.querySelectorAll(".nav-item").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.page === page
+        );
+    });
+
+    if (page === "cart") showCart();
+    if (page === "orders") showOrders();
+    if (page === "favorites") showFavorites();
+    if (page === "profile") updateProfile();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateProfile() {
+    document.getElementById("profileName").textContent = profile.name || "Mehmon";
+}
+
+function openCheckout() {
+    if (cart.length === 0) {
+        showToast("Avval savatga mahsulot qo‘shing.");
+        return;
+    }
+
+    document.getElementById("checkoutTotal").textContent =
+        "Jami: " + formatPrice(cartTotal());
+
+    document.getElementById("customerName").value = profile.name || "";
+    document.getElementById("customerPhone").value = profile.phone || "";
+
+    showPage("checkout");
+}
+
+function submitOrder(event) {
+    event.preventDefault();
+
+    if (cart.length === 0) {
+        showToast("Savatingiz bo‘sh.");
+        return;
+    }
+
+    const name = document.getElementById("customerName").value.trim();
+    const phone = document.getElementById("customerPhone").value.trim();
+    const deliveryType = document.getElementById("deliveryType").value;
+    const address = document.getElementById("customerAddress").value.trim();
+    const paymentType = document.getElementById("paymentType").value;
+
+    if (!name || !phone) {
+        showToast("Ism va telefon raqamingizni kiriting.");
+        return;
+    }
+
+    if (deliveryType === "delivery" && !address) {
+        showToast("Yetkazib berish manzilini kiriting.");
+        return;
+    }
+
+    const order = {
+        id: Date.now(),
+        date: new Date().toLocaleString("uz-UZ"),
+        items: cart.map(item => ({ ...item })),
+        total: cartTotal(),
+        name,
+        phone,
+        deliveryType,
+        address,
+        paymentType,
+        status: "Qabul qilinishi kutilmoqda"
+    };
+
+    orders.push(order);
+
+    profile.name = name;
+    profile.phone = phone;
+
+    cart = [];
+    saveData();
+    updateCartCount();
+
+    document.getElementById("checkoutForm").reset();
+
+    showPage("orders");
+    showToast("Buyurtmangiz saqlandi!");
+}
+
+function toggleFavorite(id) {
+    if (favorites.includes(id)) {
+        favorites = favorites.filter(item => item !== id);
+        showToast("Sevimlilardan olib tashlandi.");
+    } else {
+        favorites.push(id);
+        showToast("Sevimlilarga qo‘shildi!");
+    }
+
+    saveData();
+    showProducts();
+    showFavorites();
+}
+
+// Kategoriya tugmalari
 document.querySelectorAll("[data-category]").forEach(button => {
     button.addEventListener("click", () => {
         currentCategory = button.dataset.category;
 
         document.querySelectorAll("[data-category]").forEach(item => {
-            item.classList.remove("active");
+            item.classList.toggle("active", item === button);
         });
 
-        button.classList.add("active");
         showProducts();
     });
 });
 
+// Mahsulotlar ichidagi tugmalar
+document.getElementById("productsList").addEventListener("click", event => {
+    const addButton = event.target.closest("[data-add]");
+    const favoriteButton = event.target.closest("[data-favorite]");
+
+    if (addButton) {
+        addToCart(Number(addButton.dataset.add));
+    }
+
+    if (favoriteButton) {
+        toggleFavorite(Number(favoriteButton.dataset.favorite));
+    }
+});
+
+document.getElementById("favoritesList").addEventListener("click", event => {
+    const addButton = event.target.closest("[data-add]");
+    const favoriteButton = event.target.closest("[data-favorite]");
+
+    if (addButton) {
+        addToCart(Number(addButton.dataset.add));
+    }
+
+    if (favoriteButton) {
+        toggleFavorite(Number(favoriteButton.dataset.favorite));
+    }
+});
+
+// Savatdagi tugmalar
+document.getElementById("cartItems").addEventListener("click", event => {
+    const plus = event.target.closest("[data-plus]");
+    const minus = event.target.closest("[data-minus]");
+    const remove = event.target.closest("[data-remove]");
+
+    if (plus) changeQuantity(Number(plus.dataset.plus), 1);
+    if (minus) changeQuantity(Number(minus.dataset.minus), -1);
+    if (remove) removeFromCart(Number(remove.dataset.remove));
+});
+
 // Qidiruv
-if (searchInput) {
-    searchInput.addEventListener("input", showProducts);
-}
+document.getElementById("searchInput").addEventListener("input", showProducts);
 
-// Savat tugmalari
-if (productsList) {
-    productsList.addEventListener("click", event => {
-        const button = event.target.closest("[data-product-id]");
-
-        if (!button) return;
-
-        const productId = Number(button.dataset.productId);
-        addToCart(productId);
+// Menyu tugmalari
+document.getElementById("menuBtn").addEventListener("click", () => {
+    document.getElementById("menu").scrollIntoView({
+        behavior: "smooth"
     });
-}
+});
 
-// Dastlab mahsulotlarni chiqarish
+// Pastki menyu
+document.querySelectorAll(".nav-item").forEach(button => {
+    button.addEventListener("click", () => {
+        const page = button.dataset.page;
+        if (page === "home" || page === "menu") {
+            showPage("home");
+
+            if (page === "menu") {
+                setTimeout(() => {
+                    document.getElementById("menu").scrollIntoView({
+                        behavior: "smooth"
+                    });
+                }, 100);
+            }
+        } else {
+            showPage(page);
+        }
+    });
+});
+
+// Savat
+document.getElementById("checkoutBtn").addEventListener("click", openCheckout);
+
+// Buyurtma formasi
+document.getElementById("checkoutForm").addEventListener("submit", submitOrder);
+
+// Profil
+document.getElementById("profileBtn").addEventListener("click", () => {
+    showPage("profile");
+});
+
+document.getElementById("editProfileBtn").addEventListener("click", () => {
+    const newName = prompt("Ismingizni kiriting:", profile.name);
+    if (newName && newName.trim()) {
+        profile.name = newName.trim();
+        saveData();
+        updateProfile();
+        showToast("Profil yangilandi.");
+    }
+});
+
+document.getElementById("favoritesBtn").addEventListener("click", () => {
+    showPage("favorites");
+});
+
+// Yetkazib berish yoki olib ketish
+document.getElementById("deliveryType").addEventListener("change", event => {
+    const addressBox = document.getElementById("addressBox");
+    addressBox.hidden = event.target.value !== "delivery";
+});
+
+// Panelni yopish
+document.querySelectorAll("[data-close]").forEach(button => {
+    button.addEventListener("click", () => showPage("home"));
+});
+
+// Dastlabki ishga tushirish
 showProducts();
+updateCartCount();
+updateProfile();
+showPage("home");
