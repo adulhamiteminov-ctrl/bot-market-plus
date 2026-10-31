@@ -100,12 +100,18 @@
             <option value="delivery">Yetkazib berish</option>
             <option value="pickup">O‘zim olib ketaman</option>
         </select>
+<div id="addressBox">
+    <label>Manzil</label>
+    <textarea id="customerAddress" rows="3"
+              placeholder="Manzilingizni yozing"></textarea>
 
-        <div id="addressBox">
-            <label>Manzil</label>
-            <textarea id="customerAddress" rows="3"
-                      placeholder="Manzilingizni yozing"></textarea>
-        </div>
+    <button class="secondary-btn full-btn" type="button"
+            id="locationBtn">
+        📍 Lokatsiyamni yuborish
+    </button>
+
+    <p id="locationStatus" aria-live="polite"></p>
+</div>
 
         <label>To‘lov turi</label>
         <select id="paymentType">
