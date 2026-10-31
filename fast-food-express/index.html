@@ -1,16 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#171717">
-
+    <meta name="theme-color" content="#111111">
     <title>Fast Food Express</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <header class="header">
@@ -21,115 +17,165 @@
             <span>EXPRESS</span>
         </div>
     </div>
-
-    <button class="icon-btn" id="profileBtn">👤</button>
+    <button class="icon-btn" id="profileBtn" aria-label="Profil">👤</button>
 </header>
 
-<main>
+<main id="homePage">
 
-    <!-- BOSH SAHIFA BANNER -->
     <section class="hero">
         <div class="hero-content">
             <span class="hero-label">MAZALI VA TEZKOR</span>
             <h2>Sevimli taomingiz<br>sizni kutmoqda!</h2>
             <p>Buyurtma bering, biz yetkazamiz.</p>
-            <button class="yellow-btn" id="menuBtn">
-                Menyuni ko‘rish
-            </button>
+            <button class="yellow-btn" id="menuBtn">Menyuni ko‘rish</button>
         </div>
     </section>
 
-    <!-- RESTORAN HOLATI -->
     <section class="restaurant-status">
         <span class="status-dot"></span>
         <span id="restaurantStatus">Buyurtmalar qabul qilinmoqda</span>
     </section>
 
-    <!-- QIDIRUV -->
     <section class="search-section">
-        <input
-            type="search"
-            id="searchInput"
-            placeholder="Taom nomini qidiring..."
-        >
+        <input type="search" id="searchInput"
+               placeholder="🔎 Taom nomini qidiring...">
     </section>
 
-    <!-- KATEGORIYALAR -->
     <section class="section">
         <h2>Kategoriyalar</h2>
-
-        <div class="categories" id="categories">
-            <button class="category active" data-category="all">
-                Barchasi
-            </button>
-
-            <button class="category" data-category="burger">
-                🍔 Burger
-            </button>
-
-            <button class="category" data-category="lavash">
-                🌯 Lavash
-            </button>
-
-            <button class="category" data-category="pizza">
-                🍕 Pizza
-            </button>
-
-            <button class="category" data-category="drink">
-                🥤 Ichimlik
-            </button>
+        <div class="categories">
+            <button class="category active" data-category="all">Barchasi</button>
+            <button class="category" data-category="burger">🍔 Burger</button>
+            <button class="category" data-category="lavash">🌯 Lavash</button>
+            <button class="category" data-category="pizza">🍕 Pizza</button>
+            <button class="category" data-category="drink">🥤 Ichimlik</button>
         </div>
     </section>
 
-    <!-- MAHSULOTLAR -->
     <section class="section" id="menu">
         <div class="section-heading">
             <h2>Ommabop taomlar</h2>
             <span>Bizning menyu</span>
         </div>
-
-        <div class="products" id="productsList">
-            <p>Mahsulotlar yuklanmoqda...</p>
-        </div>
+        <div class="products-grid" id="productsList"></div>
     </section>
 
-    <!-- BUYURTMA HOLATI -->
-    <section class="section">
-        <div class="delivery-info">
-            <h3>🚚 Tezkor yetkazib berish</h3>
-            <p>Buyurtmangiz holatini ilovada kuzatib boring.</p>
-        </div>
+    <section class="delivery-box">
+        <h3>🚚 Tezkor yetkazib berish</h3>
+        <p>Buyurtmangizni rasmiylashtiring va holatini ilovada kuzating.</p>
     </section>
 
 </main>
 
+<!-- SAVAT -->
+<section class="page-panel" id="cartPage" hidden>
+    <div class="panel-heading">
+        <h2>🛒 Savatim</h2>
+        <button class="close-btn" data-close>✕</button>
+    </div>
+    <div id="cartItems"></div>
+    <div class="cart-summary" id="cartSummary"></div>
+    <button class="yellow-btn full-btn" id="checkoutBtn">
+        Buyurtma berish
+    </button>
+</section>
+
+<!-- BUYURTMA BERISH -->
+<section class="page-panel" id="checkoutPage" hidden>
+    <div class="panel-heading">
+        <h2>Buyurtmani rasmiylashtirish</h2>
+        <button class="close-btn" data-close>✕</button>
+    </div>
+
+    <form id="checkoutForm">
+        <label>Ismingiz</label>
+        <input type="text" id="customerName" required placeholder="Ismingiz">
+
+        <label>Telefon raqamingiz</label>
+        <input type="tel" id="customerPhone" required
+               placeholder="+998 90 123 45 67">
+
+        <label>Buyurtmani olish usuli</label>
+        <select id="deliveryType">
+            <option value="delivery">Yetkazib berish</option>
+            <option value="pickup">O‘zim olib ketaman</option>
+        </select>
+
+        <div id="addressBox">
+            <label>Manzil</label>
+            <textarea id="customerAddress" rows="3"
+                      placeholder="Manzilingizni yozing"></textarea>
+        </div>
+
+        <label>To‘lov turi</label>
+        <select id="paymentType">
+            <option value="cash">Naqd pul</option>
+            <option value="card">Karta orqali (hozircha demo)</option>
+        </select>
+
+        <div class="checkout-total" id="checkoutTotal"></div>
+        <button class="yellow-btn full-btn" type="submit">
+            Buyurtmani tasdiqlash
+        </button>
+    </form>
+</section>
+
+<!-- BUYURTMALAR -->
+<section class="page-panel" id="ordersPage" hidden>
+    <div class="panel-heading">
+        <h2>📦 Buyurtmalarim</h2>
+        <button class="close-btn" data-close>✕</button>
+    </div>
+    <div id="ordersList"></div>
+</section>
+
+<!-- SEVIMLILAR -->
+<section class="page-panel" id="favoritesPage" hidden>
+    <div class="panel-heading">
+        <h2>❤️ Sevimlilar</h2>
+        <button class="close-btn" data-close>✕</button>
+    </div>
+    <div class="products-grid" id="favoritesList"></div>
+</section>
+
+<!-- PROFIL -->
+<section class="page-panel" id="profilePage" hidden>
+    <div class="panel-heading">
+        <h2>👤 Profil</h2>
+        <button class="close-btn" data-close>✕</button>
+    </div>
+    <div class="profile-card">
+        <div class="profile-avatar">👤</div>
+        <h3 id="profileName">Mehmon</h3>
+        <p>Fast Food Express mijoz profili</p>
+        <button class="yellow-btn full-btn" id="editProfileBtn">
+            Ma’lumotlarni tahrirlash
+        </button>
+    </div>
+    <button class="secondary-btn full-btn" id="favoritesBtn">
+        ❤️ Sevimlilarim
+    </button>
+</section>
+
 <!-- PASTKI MENYU -->
 <nav class="bottom-nav">
-
     <button class="nav-item active" data-page="home">
-        <span>⌂</span>
-        <small>Bosh sahifa</small>
+        <span>⌂</span><small>Bosh sahifa</small>
     </button>
-
     <button class="nav-item" data-page="menu">
-        <span>☷</span>
-        <small>Menyu</small>
+        <span>☷</span><small>Menyu</small>
     </button>
-
-    <button class="nav-item" id="cartBtn">
-        <span>🛒</span>
-        <small>Savat</small>
+    <button class="nav-item" data-page="cart">
+        <span>🛒</span><small>Savat</small>
         <b id="cartCount">0</b>
     </button>
-
-    <button class="nav-item" id="ordersBtn">
-        <span>📦</span>
-        <small>Buyurtmalar</small>
+    <button class="nav-item" data-page="orders">
+        <span>📦</span><small>Buyurtmalar</small>
     </button>
-
 </nav>
 
-<script src="app.js"></script>
+<div id="toast" class="toast" aria-live="polite"></div>
 
+<script src="app.js"></script>
 </body>
-</html>
+    </html>
